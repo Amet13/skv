@@ -6,6 +6,12 @@
     <a href="https://github.com/Amet13/skv/actions/workflows/ci.yml">
       <img src="https://github.com/Amet13/skv/actions/workflows/ci.yml/badge.svg" alt="CI Status">
     </a>
+    <a href="https://github.com/Amet13/skv/actions/workflows/codeql.yml">
+      <img src="https://github.com/Amet13/skv/actions/workflows/codeql.yml/badge.svg" alt="CodeQL">
+    </a>
+    <a href="https://github.com/Amet13/skv/releases">
+      <img src="https://img.shields.io/github/v/release/Amet13/skv?label=version" alt="Latest Release">
+    </a>
   </p>
 </div>
 
