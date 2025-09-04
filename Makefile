@@ -7,6 +7,15 @@ build:
 build-all:
 	./scripts/build.sh all
 
+fmt:
+	./scripts/lint.sh || true # ensure tools present
+	@echo "Formatting Go files..."
+	gofmt -s -w .
+	@echo "Formatting shell scripts..."
+	@if command -v shfmt >/dev/null 2>&1; then shfmt -i 4 -w .; fi
+	@echo "Formatting markdown..."
+	@if command -v markdownlint >/dev/null 2>&1; then markdownlint --fix **/*.md || true; else if command -v npx >/dev/null 2>&1; then npx --yes markdownlint-cli --fix **/*.md || true; fi; fi
+
 lint:
 	./scripts/lint.sh
 

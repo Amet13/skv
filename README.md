@@ -24,12 +24,20 @@ skv version
 
 ## Configuration
 
-Default config file path: `$HOME/.skv.yaml`. Override with `SKV_CONFIG` or `--config`.
+Default config discovery:
+
+1. `--config` flag
+2. `SKV_CONFIG` env var
+3. `$XDG_CONFIG_HOME/skv/config.yaml` (if exists)
+4. `$HOME/.skv.yaml` or `$HOME/.skv.yml`
 
 ```yaml
+defaults:
+  region: us-east-1
+
 secrets:
   - alias: "db-password"
-    provider: "aws-secrets-manager"
+    provider: "aws"
     name: "myapp/prod/db-password"
     region: "us-east-1"
 
@@ -68,22 +76,31 @@ skv completion fish > ~/.config/fish/completions/skv.fish
 Fetch a single secret and print to stdout:
 
 ```bash
-skv get db-password
+skv get db-password --timeout 5s --retries 2 --retry-delay 250ms
 ```
 
 Inject secrets into a process:
 
 ```bash
 skv run --all -- env | grep -E "DB_PASSWORD|MYAPP_API_TOKEN"
-skv run -s db-password -s api-token -- ./your-app --flag
+skv run -s db-password -s api-token --retries 2 -- ./your-app --flag
 skv run --secrets db-password,api-token --dry-run -- echo "hello"
+```
+
+List and export:
+
+```bash
+skv list --format json
+skv export --all --format env > .env
+skv export --secrets a,b --format yaml --output secrets.yaml
 ```
 
 Common flags:
 
 - `--config`: path to config file
 - `--log-level`: error|warn|info|debug
-- `--timeout`: e.g., 5s, 30s
+- `--timeout`: e.g., 5s, 30s (per-command fetch)
+- `--retries` and `--retry-delay`: simple retry policy for fetches
 - `--dry-run`: show what would happen without executing
 
 ## Documentation

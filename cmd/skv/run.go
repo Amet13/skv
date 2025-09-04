@@ -19,14 +19,19 @@ import (
 
 func newRunCmd() *cobra.Command {
 	var (
-		secretsCSV  string
-		secretsList []string
-		all         bool
-		dryRun      bool
-		strict      bool
-		mask        bool
-		timeoutStr  string
-		concurrency int
+		secretsCSV   string
+		secretsList  []string
+		all          bool
+		allExceptCSV string
+		dryRun       bool
+		strict       bool
+		mask         bool
+		timeoutStr   string
+		concurrency  int
+		retries      int
+		retryDelay   string
+		requireEnv   []string
+		requireAlias []string
 	)
 
 	strict = true
@@ -53,10 +58,18 @@ func newRunCmd() *cobra.Command {
 				return exitCodeError{code: 2, err: err}
 			}
 
+			excluded := map[string]struct{}{}
+			for _, a := range strings.Split(allExceptCSV, ",") {
+				if t := strings.TrimSpace(a); t != "" {
+					excluded[t] = struct{}{}
+				}
+			}
 			requested := map[string]struct{}{}
 			if all {
 				for _, s := range cfg.Secrets {
-					requested[s.Alias] = struct{}{}
+					if _, skip := excluded[s.Alias]; !skip {
+						requested[s.Alias] = struct{}{}
+					}
 				}
 			}
 			if secretsCSV != "" {
@@ -136,7 +149,13 @@ func newRunCmd() *cobra.Command {
 						}
 						return
 					}
-					val, err := p.FetchSecret(ctx, spec)
+					d := 500 * time.Millisecond
+					if retryDelay != "" {
+						if dd, err := time.ParseDuration(retryDelay); err == nil {
+							d = dd
+						}
+					}
+					val, err := fetchWithRetry(ctx, p, spec, retries, d)
 					if err != nil {
 						if strict {
 							mu.Lock()
@@ -161,6 +180,19 @@ func newRunCmd() *cobra.Command {
 				return firstErr
 			}
 
+			// require-env check
+			for _, e := range requireEnv {
+				if _, ok := envAdditions[e]; !ok {
+					return exitCodeError{code: 4, err: fmt.Errorf("required env missing: %s", e)}
+				}
+			}
+			// require-alias check
+			for _, a := range requireAlias {
+				if _, ok := requested[a]; !ok {
+					return exitCodeError{code: 4, err: fmt.Errorf("required alias not selected: %s", a)}
+				}
+			}
+
 			command := cmdArgs[0]
 			commandArgs := cmdArgs[1:]
 
@@ -175,10 +207,15 @@ func newRunCmd() *cobra.Command {
 				if _, err := fmt.Fprintln(errw, "[dry-run] with environment additions:"); err != nil {
 					return err
 				}
-				for k, v := range envAdditions {
-					shown := v
+				keys := make([]string, 0, len(envAdditions))
+				for k := range envAdditions {
+					keys = append(keys, k)
+				}
+				sort.Strings(keys)
+				for _, k := range keys {
+					shown := envAdditions[k]
 					if mask {
-						shown = maskValue(v)
+						shown = maskValue(shown)
 					}
 					if _, err := fmt.Fprintf(errw, "  %s=%s\n", k, shown); err != nil {
 						return err
@@ -215,11 +252,16 @@ func newRunCmd() *cobra.Command {
 	c.Flags().StringVar(&secretsCSV, "secrets", "", "Comma-separated list of aliases")
 	c.Flags().StringSliceVarP(&secretsList, "secret", "s", nil, "Secret alias (repeatable)")
 	c.Flags().BoolVar(&all, "all", false, "Inject all configured secrets")
+	c.Flags().StringVar(&allExceptCSV, "all-except", "", "Comma-separated aliases to exclude when using --all")
 	c.Flags().BoolVar(&dryRun, "dry-run", false, "Print what would be executed and exit")
 	c.Flags().BoolVar(&strict, "strict", true, "Fail if any requested secret cannot be fetched")
 	c.Flags().BoolVar(&mask, "mask", true, "Mask secret values in logs and dry-run output")
 	c.Flags().StringVar(&timeoutStr, "timeout", "", "Timeout for fetching secrets (e.g., 5s, 30s)")
 	c.Flags().IntVar(&concurrency, "concurrency", 4, "Number of concurrent provider calls")
+	c.Flags().IntVar(&retries, "retries", 0, "Number of retries on transient errors")
+	c.Flags().StringVar(&retryDelay, "retry-delay", "500ms", "Delay between retries (e.g., 200ms, 1s)")
+	c.Flags().StringSliceVar(&requireEnv, "require-env", nil, "Environment variable names that must be present after fetch")
+	c.Flags().StringSliceVar(&requireAlias, "require-alias", nil, "Aliases that must be selected")
 	return c
 }
 
@@ -251,8 +293,13 @@ func maskValue(s string) string {
 }
 
 // exitStatusOf tries to map an ExitError to a code; returns (code, true) if mapped.
-func exitStatusOf(*exec.ExitError) (int, bool) {
-	// For portability, return a generic code for now.
+func exitStatusOf(ee *exec.ExitError) (int, bool) {
+	// Try to extract platform-specific exit status
+	type interfaceWithExitStatus interface{ ExitStatus() int }
+	if x, ok := any(ee.Sys()).(interfaceWithExitStatus); ok {
+		return x.ExitStatus(), true
+	}
+	// Fallback: return generic exit code
 	return 5, true
 }
 

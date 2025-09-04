@@ -2,7 +2,9 @@
 package main
 
 import (
+	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -18,6 +20,7 @@ import (
 var (
 	cfgPath  string
 	logLevel string
+	logFmt   string
 )
 
 func main() {
@@ -33,19 +36,43 @@ func newRootCmd() *cobra.Command {
 		Short:   "Secure Key/Value Manager",
 		Version: skvversion.String(),
 		PersistentPreRunE: func(_ *cobra.Command, _ []string) error {
-			_ = logLevel
+			var level slog.Level
+			switch strings.ToLower(strings.TrimSpace(logLevel)) {
+			case "debug":
+				level = slog.LevelDebug
+			case "warn":
+				level = slog.LevelWarn
+			case "error":
+				level = slog.LevelError
+			case "info", "":
+				level = slog.LevelInfo
+			default:
+				level = slog.LevelInfo
+			}
+			var handler slog.Handler
+			if strings.EqualFold(logFmt, "json") {
+				handler = slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: level})
+			} else {
+				handler = slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: level})
+			}
+			slog.SetDefault(slog.New(handler))
 			return nil
 		},
 	}
 
 	cmd.PersistentFlags().StringVar(&cfgPath, "config", "", "Path to config file (overrides SKV_CONFIG and default $HOME/.skv.yaml)")
 	cmd.PersistentFlags().StringVar(&logLevel, "log-level", "info", "Log level: error|warn|info|debug")
+	cmd.PersistentFlags().StringVar(&logFmt, "log-format", "text", "Log format: text|json")
 
 	// Register providers
 	provider.Register("aws-secrets-manager", awsprovider.New())
+	// Aliases for convenience and docs consistency
+	provider.Register("aws", awsprovider.New())
 	provider.Register("vault", vaultprovider.New())
 	provider.Register("gcp-secret-manager", gcpprovider.New())
+	provider.Register("gcp", gcpprovider.New())
 	provider.Register("azure-key-vault", azureprovider.New())
+	provider.Register("azure", azureprovider.New())
 	provider.Register("exec", execprovider.New())
 
 	cmd.AddCommand(newGetCmd())

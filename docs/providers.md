@@ -4,12 +4,12 @@ This page documents the supported providers, required environment variables, exa
 
 ### AWS Secrets Manager
 
-- **Auth**: Default AWS credential chain (env vars, shared config, metadata/IMDS).
-- **Name**: Secret name or ARN. Optional `version_stage` in `extras`.
-- **Extras (optional)**:
+- Auth: Default AWS credential chain (env vars, shared config, metadata/IMDS).
+- Name: Secret name or ARN. Optional `version_stage` in `extras`.
+- Extras (optional):
   - `region`: AWS region (e.g., `us-east-1`)
   - `version_stage`: e.g., `AWSCURRENT`
-- **Example**:
+- Example:
 
 ```yaml
 secrets:
@@ -19,13 +19,14 @@ secrets:
     env: DB_PASSWORD
     extras:
       region: us-east-1
+      version_stage: AWSCURRENT
 ```
 
 ### Google Secret Manager (GCP)
 
-- **Auth**: Application Default Credentials. Set `GOOGLE_APPLICATION_CREDENTIALS` to a service account key if needed.
-- **Name**: `projects/<PROJECT>/secrets/<SECRET>/versions/<VERSION>` (use `latest` for newest).
-- **Example**:
+- Auth: Application Default Credentials. Set `GOOGLE_APPLICATION_CREDENTIALS` to a service account key if needed.
+- Name: `projects/<PROJECT>/secrets/<SECRET>/versions/<VERSION>` (use `latest` for newest).
+- Example:
 
 ```yaml
 secrets:
@@ -37,11 +38,11 @@ secrets:
 
 ### Azure Key Vault
 
-- **Auth**: Default Azure credentials (managed identity, environment, or CLI login).
-- **Name**: Secret name. Optional specific `version` via `extras.version`.
-- **Extras (required)**:
+- Auth: Default Azure credentials (managed identity, environment, or CLI login).
+- Name: Secret name. Optional specific `version` via `extras.version`.
+- Extras (required):
   - `vault_url`: e.g., <https://myvault.vault.azure.net>
-- **Example**:
+- Example:
 
 ```yaml
 secrets:
@@ -55,11 +56,14 @@ secrets:
 
 ### HashiCorp Vault (KV v2)
 
-- **Auth**: `VAULT_TOKEN` (or token in `extras.token`); address from `VAULT_ADDR` or `extras.address`.
-- **Name**: KV v2 path, typically `<mount>/data/<path>` (e.g., `kv/data/app/password`).
-- **Extras (optional)**:
+- Auth: `VAULT_TOKEN` or AppRole via `extras.role_id` and `extras.secret_id`.
+- Address from `VAULT_ADDR` or `extras.address`.
+- Name: KV v2 path, typically `<mount>/data/<path>` (e.g., `kv/data/app/password`).
+- Extras (optional):
   - `address`: Vault address, e.g., <http://127.0.0.1:8200>
-- **Example**:
+  - `mount`: override KV mount (if not inferrable)
+  - `key`: preferred field name inside secret data
+- Example:
 
 ```yaml
 secrets:
@@ -69,16 +73,20 @@ secrets:
     env: SERVICE_PASSWORD
     extras:
       address: http://127.0.0.1:8200
+      role_id: "{{ VAULT_ROLE_ID }}"
+      secret_id: "{{ VAULT_SECRET_ID }}"
 ```
 
 ### Exec Provider
 
-- **Behavior**: Executes a local command and uses stdout as the secret value.
-- **Security**: Ensure the script is trusted and does not log secrets.
-- **Name**: Command path when convenient; any additional arguments can go into `extras.args`.
-- **Extras (optional)**:
-  - `timeout`: duration like `5s`
-- **Example**:
+- Behavior: Executes a local command and uses stdout as the secret value.
+- If `extras.cmd` is omitted, `name` is treated as the command.
+- Security: Ensure the script is trusted and does not log secrets.
+- Name: Command path when convenient; any additional arguments can go into `extras.args`.
+- Extras (optional):
+  - `args`: space-separated command arguments
+  - `trim`: `true` to trim whitespace from stdout
+- Example:
 
 ```yaml
 secrets:
@@ -87,5 +95,6 @@ secrets:
     name: ./scripts/fetch_token.sh
     env: DYNAMIC_TOKEN
     extras:
-      timeout: 5s
+      args: "--timeout 5s"
+      trim: "true"
 ```

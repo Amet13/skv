@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -14,6 +15,9 @@ import (
 func newGetCmd() *cobra.Command {
 	var newline bool
 	var raw = true
+	var timeoutStr string
+	var retries int
+	var retryDelayStr string
 
 	c := &cobra.Command{
 		Use:   "get <alias>",
@@ -38,7 +42,24 @@ func newGetCmd() *cobra.Command {
 			}
 
 			ctx := context.Background()
-			val, err := p.FetchSecret(ctx, spec)
+			if timeoutStr != "" {
+				d, err := time.ParseDuration(timeoutStr)
+				if err != nil {
+					return exitCodeError{code: 2, err: fmt.Errorf("invalid --timeout: %w", err)}
+				}
+				var cancel context.CancelFunc
+				ctx, cancel = context.WithTimeout(ctx, d)
+				defer cancel()
+			}
+
+			delay := 500 * time.Millisecond
+			if retryDelayStr != "" {
+				if d, err := time.ParseDuration(retryDelayStr); err == nil {
+					delay = d
+				}
+			}
+
+			val, err := fetchWithRetry(ctx, p, spec, retries, delay)
 			if err != nil {
 				if errors.Is(err, provider.ErrNotFound) {
 					return exitCodeError{code: 4, err: err}
@@ -75,6 +96,9 @@ func newGetCmd() *cobra.Command {
 
 	c.Flags().BoolVar(&newline, "newline", false, "Append trailing newline")
 	c.Flags().BoolVar(&raw, "raw", true, "Print raw secret value")
+	c.Flags().StringVar(&timeoutStr, "timeout", "", "Timeout for fetching the secret (e.g., 5s, 30s)")
+	c.Flags().IntVar(&retries, "retries", 0, "Number of retries on transient errors")
+	c.Flags().StringVar(&retryDelayStr, "retry-delay", "500ms", "Delay between retries (e.g., 200ms, 1s)")
 	return c
 }
 

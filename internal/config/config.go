@@ -15,7 +15,16 @@ import (
 
 // Config is the top-level configuration.
 type Config struct {
-	Secrets []Secret `yaml:"secrets"`
+	Defaults Defaults `yaml:"defaults"`
+	Secrets  []Secret `yaml:"secrets"`
+}
+
+// Defaults holds global default parameters merged into each secret unless overridden.
+type Defaults struct {
+	Region  string            `yaml:"region"`
+	Address string            `yaml:"address"`
+	Token   string            `yaml:"token"`
+	Extras  map[string]string `yaml:"extras"`
 }
 
 // Secret represents a single secret to fetch and where to place it.
@@ -30,22 +39,14 @@ type Secret struct {
 	Path     string            `yaml:"path"`
 	Version  *int              `yaml:"version"`
 	Metadata map[string]string `yaml:"metadata"`
+	Extras   map[string]string `yaml:"extras"`
 }
 
 // Load reads the configuration from file, applying env interpolation and validation.
 func Load(overridePath string) (*Config, error) {
-	path := overridePath
+	path := locateConfigPath(overridePath)
 	if path == "" {
-		if env := os.Getenv("SKV_CONFIG"); env != "" {
-			path = env
-		}
-	}
-	if path == "" {
-		home, err := os.UserHomeDir()
-		if err != nil {
-			return nil, fmt.Errorf("determine home dir: %w", err)
-		}
-		path = filepath.Join(home, ".skv.yaml")
+		return nil, errors.New("no config file found; set --config or SKV_CONFIG or create ~/.skv.yaml")
 	}
 
 	// #nosec G304: path is sourced from flags/env/home and is expected to be a user-provided file path
@@ -57,6 +58,16 @@ func Load(overridePath string) (*Config, error) {
 	var cfg Config
 	if err := yaml.Unmarshal(b, &cfg); err != nil {
 		return nil, fmt.Errorf("parse config: %w", err)
+	}
+
+	// Interpolate environment variables in defaults
+	cfg.Defaults.Region = interpolateEnv(cfg.Defaults.Region)
+	cfg.Defaults.Address = interpolateEnv(cfg.Defaults.Address)
+	cfg.Defaults.Token = interpolateEnv(cfg.Defaults.Token)
+	if cfg.Defaults.Extras != nil {
+		for k, v := range cfg.Defaults.Extras {
+			cfg.Defaults.Extras[k] = interpolateEnv(v)
+		}
 	}
 
 	// Interpolate environment variables in all string fields.
@@ -76,12 +87,72 @@ func Load(overridePath string) (*Config, error) {
 				s.Metadata[k] = interpolateEnv(v)
 			}
 		}
+		// Extras values
+		if s.Extras != nil {
+			for k, v := range s.Extras {
+				s.Extras[k] = interpolateEnv(v)
+			}
+		}
+	}
+
+	// After interpolation, merge defaults into secrets
+	for i := range cfg.Secrets {
+		s := &cfg.Secrets[i]
+		if s.Region == "" && cfg.Defaults.Region != "" {
+			s.Region = cfg.Defaults.Region
+		}
+		if s.Address == "" && cfg.Defaults.Address != "" {
+			s.Address = cfg.Defaults.Address
+		}
+		if s.Token == "" && cfg.Defaults.Token != "" {
+			s.Token = cfg.Defaults.Token
+		}
+		if cfg.Defaults.Extras != nil {
+			if s.Extras == nil {
+				s.Extras = map[string]string{}
+			}
+			for k, v := range cfg.Defaults.Extras {
+				if _, exists := s.Extras[k]; !exists {
+					s.Extras[k] = v
+				}
+			}
+		}
 	}
 
 	if err := cfg.validate(); err != nil {
 		return nil, err
 	}
 	return &cfg, nil
+}
+
+func locateConfigPath(overridePath string) string {
+	if overridePath != "" {
+		return overridePath
+	}
+	if env := os.Getenv("SKV_CONFIG"); env != "" {
+		return env
+	}
+	// XDG config home
+	if xdg := os.Getenv("XDG_CONFIG_HOME"); xdg != "" {
+		p := filepath.Join(xdg, "skv", "config.yaml")
+		if _, err := os.Stat(p); err == nil {
+			return p
+		}
+	}
+	// Home fallbacks
+	home, err := os.UserHomeDir()
+	if err == nil {
+		candidates := []string{
+			filepath.Join(home, ".skv.yaml"),
+			filepath.Join(home, ".skv.yml"),
+		}
+		for _, p := range candidates {
+			if _, err := os.Stat(p); err == nil {
+				return p
+			}
+		}
+	}
+	return ""
 }
 
 func (c *Config) validate() error {
@@ -130,6 +201,7 @@ func (s Secret) ToSpec() provider.SecretSpec {
 	if strings.TrimSpace(envName) == "" {
 		envName = deriveEnvName(s.Alias)
 	}
+	// Start with built-in mapped fields
 	extras := map[string]string{}
 	if s.Region != "" {
 		extras["region"] = s.Region
@@ -146,10 +218,15 @@ func (s Secret) ToSpec() provider.SecretSpec {
 	if s.Version != nil {
 		extras["version"] = fmt.Sprintf("%d", *s.Version)
 	}
+	// Merge metadata (back-compat) without overriding built-ins
 	for k, v := range s.Metadata {
 		if _, exists := extras[k]; !exists {
 			extras[k] = v
 		}
+	}
+	// Merge explicit extras with highest precedence
+	for k, v := range s.Extras {
+		extras[k] = v
 	}
 	return provider.SecretSpec{
 		Alias:    s.Alias,

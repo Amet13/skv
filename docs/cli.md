@@ -47,10 +47,10 @@ Generate completion for shells.
 
 ```bash
 # Fetch one secret
-skv get -s db_password
+skv get db_password
 
 # Export all secrets to .env format
-skv export --format env > .env
+skv export --all --env-file > .env
 
 # Run with secrets from config, with concurrency
 skv run --concurrency 8 -s db_password -- ./bin/app

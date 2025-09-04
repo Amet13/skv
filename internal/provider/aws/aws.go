@@ -38,10 +38,18 @@ func (a *awsProvider) FetchSecret(ctx context.Context, spec provider.SecretSpec)
 	}
 
 	sm := newSMClient(cfg)
+	var versionStage *string
+	if s, ok := spec.Extras["version_stage"]; ok && s != "" {
+		versionStage = &s
+	}
+	var versionID *string
+	if vid, ok := spec.Extras["version_id"]; ok && vid != "" {
+		versionID = &vid
+	}
 	out, err := sm.GetSecretValue(ctx, &secretsmanager.GetSecretValueInput{
 		SecretId:     &spec.Name,
-		VersionId:    nil,
-		VersionStage: nil,
+		VersionId:    versionID,
+		VersionStage: versionStage,
 	})
 	if err != nil {
 		var rnfe *types.ResourceNotFoundException

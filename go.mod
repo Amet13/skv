@@ -1,6 +1,6 @@
 module skv
 
-go 1.25.1
+go 1.25.0
 
 require (
 	cloud.google.com/go/secretmanager v1.15.0

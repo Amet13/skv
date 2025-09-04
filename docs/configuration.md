@@ -1,6 +1,11 @@
 ## Configuration
 
-Default path: `$HOME/.skv.yaml`. Override with `SKV_CONFIG` or `--config`.
+Default discovery order:
+
+1. `--config` flag
+2. `SKV_CONFIG` env var
+3. `$XDG_CONFIG_HOME/skv/config.yaml` (if exists)
+4. `$HOME/.skv.yaml` or `$HOME/.skv.yml`
 
 Indentation is 2 spaces.
 
@@ -12,6 +17,17 @@ secrets:
     provider: aws
     name: myapp/prod/db-password
     env: DB_PASSWORD
+```
+
+### Defaults
+
+You can set global defaults merged into each secret (per-secret values override):
+
+```yaml
+defaults:
+  region: us-east-1
+  extras:
+    version_stage: AWSCURRENT
 ```
 
 ### Schema
@@ -37,6 +53,7 @@ secrets:
     env: DB_PASSWORD
     extras:
       region: us-east-1
+      version_stage: AWSCURRENT
 
   # GCP
   - alias: api_key
@@ -59,12 +76,18 @@ secrets:
     env: SERVICE_PASSWORD
     extras:
       address: http://127.0.0.1:8200
+      # AppRole auth (optional)
+      role_id: "{{ VAULT_ROLE_ID }}"
+      secret_id: "{{ VAULT_SECRET_ID }}"
 
   # Exec
   - alias: dynamic_token
     provider: exec
     name: ./scripts/fetch_token.sh
     env: DYNAMIC_TOKEN
+    extras:
+      args: "--flag1 --flag2"
+      trim: "true"
 ```
 
 Notes:

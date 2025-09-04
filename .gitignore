@@ -1,8 +1,20 @@
-dist/
-.DS_Store
-.idea/
-.vscode/
-*.swp
-*.swo
+# Build artifacts
+/dist/
+**/skv_*_*
+*.exe
+
+# Coverage
 coverage.out
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+
+# Node tools cache
+node_modules/
+
+# macOS
+.DS_Store
+
 bin/

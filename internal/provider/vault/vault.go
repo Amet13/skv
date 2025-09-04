@@ -29,6 +29,21 @@ func (v *vaultProvider) FetchSecret(ctx context.Context, spec provider.SecretSpe
 	}
 	if tok, ok := spec.Extras["token"]; ok && tok != "" {
 		client.SetToken(tok)
+	} else if roleID, rok := spec.Extras["role_id"]; rok {
+		if secretID, sok := spec.Extras["secret_id"]; sok {
+			// AppRole login
+			secret, err := client.Logical().WriteWithContext(ctx, "auth/approle/login", map[string]interface{}{
+				"role_id":   roleID,
+				"secret_id": secretID,
+			})
+			if err != nil {
+				return "", fmt.Errorf("vault approle login: %w", err)
+			}
+			if secret == nil || secret.Auth == nil || secret.Auth.ClientToken == "" {
+				return "", errors.New("vault approle login: empty token")
+			}
+			client.SetToken(secret.Auth.ClientToken)
+		}
 	}
 
 	// Try KVv2 if we can infer mount and path from name or extras

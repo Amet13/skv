@@ -1,21 +1,52 @@
 name: CI
-
 on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
-
 jobs:
-  build-test:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Go
-        uses: actions/setup-go@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
-          go-version: "1.25.x"
-          cache: true
-      - name: Make CI
+          go-version-file: go.mod
+          check-latest: true
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Lint and test
         run: make ci
+      - name: Vet
+        run: go vet ./...
+      - name: Staticcheck
+        uses: dominikh/staticcheck-action@v1
+        with:
+          version: latest
+          install-go: false
+      - name: Govulncheck
+        uses: golang/govulncheck-action@v1
+        with:
+          go-version-file: go.mod
+      - name: Build
+        run: make build-all
+      - name: Generate shell completions
+        run: |
+          mkdir -p completions
+          ./dist/skv_linux_amd64 completion bash > completions/skv.bash
+          ./dist/skv_linux_amd64 completion zsh > completions/_skv
+          ./dist/skv_linux_amd64 completion fish > completions/skv.fish
+          ./dist/skv_linux_amd64 completion powershell > completions/skv.ps1
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: skv-dist
+          path: |
+            dist/
+            completions/
