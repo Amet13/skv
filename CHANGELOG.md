@@ -6,6 +6,15 @@ All notable changes to this project will be documented in this file.
 
 - TBD
 
+## [0.2.1] - 2025-09-04
+
+- Docs: expanded providers/configuration docs with detailed examples
+- Examples: added `examples/` directory with per-provider `.skv.yaml` samples
+- CI: removed Codecov upload; retained coverage check locally in workflow
+- Release: fixed GoReleaser deprecation by switching `archives.builds` → `archives.ids`
+- Tests: added Vault KVv2 empty payload test; CLI strict/non-strict partial scenarios
+- Housekeeping: ignore `coverage.out` and `bin/` in `.gitignore`; removed committed tool binary
+
 ## [0.1.0] - 2025-09-04
 
 - Initial MVP: CLI (get/run/version/completion/list/export)
