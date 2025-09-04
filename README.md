@@ -13,15 +13,24 @@ skv is a small Go CLI that fetches secrets from providers like AWS Secrets Manag
 
 ## Install
 
-Requires Go 1.25.1 or newer. Recommended: latest Go 1.25.x.
+Preferred: download a release binary from GitHub Releases.
 
-Build locally:
+- Go to the Releases page and download the asset matching your OS/ARCH (e.g., `skv_darwin_arm64`, `skv_linux_amd64`).
+- Rename to `skv` if needed, mark executable, and move into your `PATH`:
 
 ```bash
-bash ./build.sh host
+chmod +x ./skv_$(uname | tr 'A-Z' 'a-z')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+mv ./skv_* /usr/local/bin/skv
+skv version
 ```
 
-Artifacts are written to `dist/`.
+Build from source (optional, requires Go 1.25.x):
+
+```bash
+./build.sh host
+```
+
+Build artifacts are written to `dist/`.
 
 Optional optimizations (Go 1.25+):
 
@@ -152,5 +161,5 @@ pre-commit install
 Or run the lint script (auto-installs tools if missing):
 
 ```bash
-bash scripts/lint.sh
+./scripts/lint.sh
 ```
