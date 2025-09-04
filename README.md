@@ -1,4 +1,13 @@
-# skv - Secure Key/Value Manager
+<div align="center">
+  <img src="images/logo.png" alt="skv Logo" width="200" style="border-radius: 20px;">
+  <h1>skv</h1>
+  <p><strong>Small CLI tool that fetches secrets from provider</strong></p>
+  <p>
+    <a href="https://github.com/Amet13/skv/actions/workflows/ci.yml">
+      <img src="https://github.com/Amet13/skv/actions/workflows/ci.yml/badge.svg" alt="CI Status">
+    </a>
+  </p>
+</div>
 
 skv is a small Go CLI that fetches secrets from providers like AWS Secrets Manager and HashiCorp Vault, and injects them into a process environment or prints them to stdout.
 
