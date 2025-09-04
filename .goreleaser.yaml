@@ -11,7 +11,10 @@ builds:
     flags:
       - -trimpath
     ldflags:
-      - -s -w -X skv/internal/version.Version={{.Version}} -X skv/internal/version.Commit={{.ShortCommit}} -X skv/internal/version.Date={{.Date}}
+      - -s -w
+      - -X skv/internal/version.Version={{.Version}}
+      - -X skv/internal/version.Commit={{.ShortCommit}}
+      - -X skv/internal/version.Date={{.Date}}
     goos: [linux, darwin, windows]
     goarch: [amd64, arm64]
 archives:

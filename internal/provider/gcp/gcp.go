@@ -18,13 +18,17 @@ type gcpProvider struct{}
 // New returns a new GCP Secret Manager provider.
 func New() provider.Provider { return &gcpProvider{} }
 
-func (g *gcpProvider) FetchSecret(ctx context.Context, spec provider.SecretSpec) (string, error) {
+// seam for testing access
+var gcpAccess = func(ctx context.Context, name string) (*secretspb.AccessSecretVersionResponse, error) {
 	client, err := secretmanager.NewClient(ctx)
 	if err != nil {
-		return "", fmt.Errorf("gcp: client: %w", err)
+		return nil, err
 	}
 	defer func() { _ = client.Close() }()
+	return client.AccessSecretVersion(ctx, &secretspb.AccessSecretVersionRequest{Name: name})
+}
 
+func (g *gcpProvider) FetchSecret(ctx context.Context, spec provider.SecretSpec) (string, error) {
 	name := spec.Name
 	if !strings.HasPrefix(name, "projects/") {
 		project := spec.Extras["project"]
@@ -38,8 +42,7 @@ func (g *gcpProvider) FetchSecret(ctx context.Context, spec provider.SecretSpec)
 		name = fmt.Sprintf("projects/%s/secrets/%s/versions/%s", project, name, version)
 	}
 
-	req := &secretspb.AccessSecretVersionRequest{Name: name}
-	res, err := client.AccessSecretVersion(ctx, req)
+	res, err := gcpAccess(ctx, name)
 	if err != nil {
 		st, ok := status.FromError(err)
 		if ok && (st.Code() == codes.NotFound || st.Code() == codes.PermissionDenied) {

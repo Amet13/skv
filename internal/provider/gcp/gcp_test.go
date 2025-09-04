@@ -1,16 +1,39 @@
 package gcp
 
 import (
+	"context"
+	"errors"
 	"testing"
 
+	secretspb "cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"skv/internal/provider"
 )
 
-func TestGCPStatusNotFound(t *testing.T) {
-	st := status.Error(codes.NotFound, "not found")
-	if s, ok := status.FromError(st); !ok || s.Code() != codes.NotFound {
-		t.Fatalf("expected NotFound status")
+func TestGCPNotFoundMapsToErrNotFound(t *testing.T) {
+	old := gcpAccess
+	defer func() { gcpAccess = old }()
+	gcpAccess = func(_ context.Context, _ string) (*secretspb.AccessSecretVersionResponse, error) {
+		return nil, status.Error(codes.NotFound, "nope")
+	}
+	p := &gcpProvider{}
+	_, err := p.FetchSecret(context.Background(), provider.SecretSpec{Alias: "a", Name: "projects/p/secrets/s/versions/1"})
+	if !errors.Is(err, provider.ErrNotFound) {
+		t.Fatalf("expected ErrNotFound, got %v", err)
+	}
+}
+
+func TestGCPSuccess(t *testing.T) {
+	old := gcpAccess
+	defer func() { gcpAccess = old }()
+	gcpAccess = func(_ context.Context, _ string) (*secretspb.AccessSecretVersionResponse, error) {
+		return &secretspb.AccessSecretVersionResponse{Payload: &secretspb.SecretPayload{Data: []byte("ok")}}, nil
+	}
+	p := &gcpProvider{}
+	out, err := p.FetchSecret(context.Background(), provider.SecretSpec{Alias: "a", Name: "projects/p/secrets/s/versions/1"})
+	if err != nil || out != "ok" {
+		t.Fatalf("got %q err=%v", out, err)
 	}
 }
 

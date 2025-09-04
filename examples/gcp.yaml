@@ -1,0 +1,6 @@
+---
+secrets:
+  - alias: api_key
+    provider: gcp
+    name: projects/myproj/secrets/api_key/versions/latest
+    env: API_KEY

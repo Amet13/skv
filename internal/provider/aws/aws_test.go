@@ -33,3 +33,16 @@ func TestAWSNotFoundMapsToErrNotFound(t *testing.T) {
 	}
 }
 
+func TestAWSSuccessSecretString(t *testing.T) {
+	oldNew := newSMClient
+	defer func() { newSMClient = oldNew }()
+	secret := "ok"
+	out := &secretsmanager.GetSecretValueOutput{SecretString: &secret}
+	newSMClient = func(_ aws.Config) smClient { return fakeSM{out: out, err: nil} }
+	a := &awsProvider{}
+	got, err := a.FetchSecret(context.Background(), provider.SecretSpec{Name: "n", Extras: map[string]string{"region": "us-east-1"}})
+	if err != nil || got != "ok" {
+		t.Fatalf("got %q err=%v", got, err)
+	}
+}
+

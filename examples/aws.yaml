@@ -1,0 +1,8 @@
+---
+secrets:
+  - alias: db_password
+    provider: aws
+    name: myapp/prod/db_password
+    env: DB_PASSWORD
+    extras:
+      region: us-east-1

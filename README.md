@@ -1,7 +1,7 @@
 <div align="center">
   <img src="images/logo.png" alt="skv Logo" width="200" style="border-radius: 20px;">
   <h1>skv</h1>
-  <p><strong>Small CLI tool that fetches secrets from provider</strong></p>
+  <p><strong>CLI tool that fetches secrets from different providers</strong></p>
   <p>
     <a href="https://github.com/Amet13/skv/actions/workflows/ci.yml">
       <img src="https://github.com/Amet13/skv/actions/workflows/ci.yml/badge.svg" alt="CI Status">
@@ -9,7 +9,7 @@
   </p>
 </div>
 
-skv is a small Go CLI that fetches secrets from providers like AWS Secrets Manager and HashiCorp Vault, and injects them into a process environment or prints them to stdout.
+skv (Secret Key-Value) is a CLI tool that fetches secrets from providers like AWS Secrets Manager and HashiCorp Vault, and injects them into a process environment or prints them to stdout.
 
 ## Install
 
@@ -103,20 +103,7 @@ Common flags:
 
 ## Providers
 
-### AWS Secrets Manager
-
-- Uses the default AWS credential chain; override region via `region` in the secret entry.
-- Returns `SecretString` if present, otherwise the binary payload converted to string.
-
-### HashiCorp Vault
-
-### GCP Secret Manager
-
-- Provide `metadata.project` and optional `metadata.version` if `name` is not a full resource path.
-
-### Azure Key Vault
-
-- Provide `metadata.vault_url` (e.g., <https://myvault.vault.azure.net/>) and optional `metadata.version`.
+See `docs/providers.md` for full provider documentation and examples.
 
 ## Documentation
 
@@ -124,12 +111,7 @@ Common flags:
 - CLI: `docs/cli.md`
 - Configuration: `docs/configuration.md`
 - Providers: `docs/providers.md`
-- Roadmap: `ROADMAP.md`
 - Changelog: `CHANGELOG.md`
-
-- Configure `address` and `token` (token can be interpolated from env).
-- Attempts KV v2 read; falls back to logical read. If the data is a map with a single string field, that value is used; otherwise the JSON-serialized map is returned.
-- You can specify `extras.key` by adding `metadata: { key: someField }` in the config to extract a specific field from the secret.
 
 ## Exit Codes
 

@@ -1,4 +1,4 @@
-# CLI Reference
+## CLI Reference
 
 ## skv get <alias>
 
@@ -42,3 +42,16 @@ Print version info.
 ## skv completion [bash|zsh|fish|powershell]
 
 Generate completion for shells.
+
+### Examples
+
+```bash
+# Fetch one secret
+skv get -s db_password
+
+# Export all secrets to .env format
+skv export --format env > .env
+
+# Run with secrets from config, with concurrency
+skv run --concurrency 8 -s db_password -- ./bin/app
+```

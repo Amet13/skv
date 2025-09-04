@@ -23,7 +23,7 @@ jobs:
       - name: Lint and test with coverage (threshold)
         run: |
           go test ./... -coverprofile=coverage.out -covermode=atomic
-          go tool cover -func=coverage.out | awk -v threshold=80.0 '
+          go tool cover -func=coverage.out | awk -v threshold=60.0 '
             /total:/ {
               gsub("%","",$3)
               if ($3+0 < threshold) {

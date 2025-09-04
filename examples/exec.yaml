@@ -1,0 +1,8 @@
+---
+secrets:
+  - alias: dynamic_token
+    provider: exec
+    name: ./scripts/fetch_token.sh
+    env: DYNAMIC_TOKEN
+    extras:
+      timeout: 5s
