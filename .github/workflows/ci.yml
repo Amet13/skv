@@ -1,4 +1,3 @@
----
 name: CI
 
 on:
@@ -18,19 +17,5 @@ jobs:
         with:
           go-version: "1.25.x"
           cache: true
-      - name: Build
-        run: ./build.sh host
-      - name: Lint and test with coverage (threshold)
-        run: |
-          go test ./... -coverprofile=coverage.out -covermode=atomic
-          go tool cover -func=coverage.out | awk -v threshold=60.0 '
-            /total:/ {
-              gsub("%","",$3)
-              if ($3+0 < threshold) {
-                printf "Coverage %.2f%% below %.2f%%\n", $3, threshold
-                exit 1
-              }
-            }
-          '
-
-          ./scripts/lint.sh
+      - name: Make CI
+        run: make ci

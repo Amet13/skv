@@ -1,4 +1,3 @@
----
 name: Release
 
 on:
@@ -18,6 +17,8 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: "1.25.x"
+      - name: Verify build
+        run: make build
       - uses: goreleaser/goreleaser-action@v6
         with:
           version: v2.12.0

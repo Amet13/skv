@@ -1,10 +1,8 @@
----
 version: 2
 run:
   timeout: 5m
   tests: true
   go: "1.25"
-
 linters:
   enable:
     - govet
@@ -14,6 +12,5 @@ linters:
     - misspell
     - revive
     - gosec
-
 issues:
   exclude-use-default: false

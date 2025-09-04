@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
-DIST_DIR="$ROOT_DIR/dist"
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+DIST_DIR="$REPO_ROOT/dist"
 PGO_PROFILE="${PGO_PROFILE:-}"
 VERSION_OVERRIDE="${VERSION:-}"
 mkdir -p "$DIST_DIR"
@@ -36,7 +37,7 @@ build_target() {
     if [[ -n "$PGO_PROFILE" && -f "$PGO_PROFILE" ]]; then
         build_flags+=("-pgo=$PGO_PROFILE")
     fi
-    (cd "$ROOT_DIR" &&
+    (cd "$REPO_ROOT" &&
         GOOS="$goos" GOARCH="$goarch" \
             go mod tidy &&
         go build "${build_flags[@]}" -ldflags "${ldflags[*]}" -o "$DIST_DIR/skv_${goos}_${goarch}" ./cmd/skv)

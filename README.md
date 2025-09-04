@@ -22,18 +22,6 @@ mv ./skv_* /usr/local/bin/skv
 skv version
 ```
 
-## Build from source
-
-Requirements:
-
-- Go 1.25.x
-
-```bash
-./build.sh host
-```
-
-Built artifacts are written to `dist/`.
-
 ## Configuration
 
 Default config file path: `$HOME/.skv.yaml`. Override with `SKV_CONFIG` or `--config`.
@@ -103,6 +91,30 @@ Common flags:
 - CLI: `docs/cli.md`
 - Configuration: `docs/configuration.md`
 - Providers: `docs/providers.md`
+
+## Development
+
+Requirements:
+
+- Go 1.25.x
+
+```bash
+make build     # host
+make build-all # small cross-build matrix
+```
+
+Built artifacts are written to `dist/`.
+
+## Common tasks (Make)
+
+```bash
+make fmt       # format Go, shell, markdown, YAML
+make lint      # run all linters
+make test      # run tests
+make cover     # run tests with coverage gate
+make clean     # remove dist/
+make release   # local snapshot via GoReleaser (no publish)
+```
 
 ## Security
 

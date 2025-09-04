@@ -10,6 +10,7 @@ if ! command -v golangci-lint >/dev/null 2>&1; then
     curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "${ROOT_DIR}/bin" latest
     export PATH="${ROOT_DIR}/bin:${PATH}"
 fi
+
 golangci-lint run
 go test ./...
 
@@ -23,7 +24,12 @@ done < <(find "$ROOT_DIR" -type f -name '*.go' -print0)
 
 echo "Running shellcheck..."
 if command -v shellcheck >/dev/null 2>&1; then
-    shellcheck "$ROOT_DIR"/build.sh
+    if [ -f "$ROOT_DIR/scripts/build.sh" ]; then
+        shellcheck "$ROOT_DIR"/scripts/build.sh
+    fi
+    if [ -f "$ROOT_DIR/scripts/lint.sh" ]; then
+        shellcheck "$ROOT_DIR"/scripts/lint.sh
+    fi
 fi
 
 echo "Running shfmt (apply)..."
@@ -40,14 +46,9 @@ else
     fi
 fi
 
-echo "Running yamllint..."
-if command -v yamllint >/dev/null 2>&1; then
-    yamllint -c "$ROOT_DIR/.yamllint.yaml" "$ROOT_DIR"
-fi
-
 echo "Running yamlfmt (apply) if available..."
 if command -v yamlfmt >/dev/null 2>&1; then
-    yamlfmt -w "$ROOT_DIR"
+    yamlfmt "$ROOT_DIR"
 fi
 
 echo "Running actionlint (GitHub Actions workflows)..."

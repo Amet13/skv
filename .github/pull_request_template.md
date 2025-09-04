@@ -5,8 +5,8 @@
 ## Checklist
 
 - [ ] Tests added/updated
-- [ ] `./build.sh host` passes
-- [ ] `go test ./...` passes
+- [ ] `make build` passes
+- [ ] `make test` passes
 - [ ] No secrets in logs or docs
 
 ## Related issues

@@ -3,7 +3,7 @@
 Thanks for your interest in contributing! Please follow these guidelines:
 
 - Use Go 1.25.x or newer.
-- Run `./build.sh host` before submitting PRs.
+- Run `make build` before submitting PRs.
 - Add tests for new features and bug fixes.
 - Keep code readable and well-structured; avoid unnecessary complexity.
 
@@ -13,8 +13,8 @@ Thanks for your interest in contributing! Please follow these guidelines:
 1. Create a feature branch.
 1. Build, lint, and run tests:
 
-- `./build.sh host`
-- `./scripts/lint.sh` (auto-installs tools if missing)
+- `make build`
+- `make lint` (auto-installs tools if missing)
 
 1. Open a PR with a clear description.
 
