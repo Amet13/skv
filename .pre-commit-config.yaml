@@ -1,0 +1,44 @@
+---
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.42.0
+    hooks:
+      - id: markdownlint
+        additional_dependencies: ["markdownlint@0.31.1"]
+  - repo: https://github.com/mvdan/gofumpt
+    rev: v0.6.0
+    hooks:
+      - id: gofumpt
+        entry: gofumpt -w
+        language: golang
+        types: [go]
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+        args: ["detect", "--no-banner", "--redact"]
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.10.0
+    hooks:
+      - id: shfmt
+        args: ["-s", "-w", "-i", "4"]
+  - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+    rev: 0.2.4
+    hooks:
+      - id: yamlfmt
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: ["-c", ".yamllint.yaml"]
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.5
+    hooks:
+      - id: actionlint
