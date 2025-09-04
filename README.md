@@ -9,33 +9,27 @@
   </p>
 </div>
 
-skv (Secret Key-Value) is a CLI tool that fetches secrets from providers like AWS Secrets Manager and HashiCorp Vault, and injects them into a process environment or prints them to stdout.
+Fetch secrets from providers like AWS Secrets Manager and HashiCorp Vault, and inject them into a process environment or prints them to stdout.
 
-## Install
+## Installation
 
-Preferred: download a release binary from GitHub Releases.
-
-- Go to the Releases page and download the asset matching your OS/ARCH (e.g., `skv_darwin_arm64`, `skv_linux_amd64`).
-- Rename to `skv` if needed, mark executable, and move into your `PATH`:
+- Download a [latest release](https://github.com/Amet13/skv/releases/latest/).
+- Rename it to `skv` and make it executable:
 
 ```bash
-chmod +x ./skv_$(uname | tr 'A-Z' 'a-z')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
-mv ./skv_* /usr/local/bin/skv
+chmod +x ./skv_* && mv ./skv_* /usr/local/bin/skv
 skv version
 ```
 
-Build from source (optional, requires Go 1.25.x):
+## Build from source
+
+Requirement: Go 1.25.x:
 
 ```bash
 ./build.sh host
 ```
 
-Build artifacts are written to `dist/`.
-
-Optional optimizations (Go 1.25+):
-
-- Profile-guided optimization (PGO): set `PGO_PROFILE=path/to/profile.pprof` before running `build.sh`.
-- Experimental GC: you can set `GOEXPERIMENT=greenteagc` to evaluate impact (available in recent Go versions).
+Built artifacts are written to `dist/`.
 
 ## Configuration
 
