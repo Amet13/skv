@@ -16,7 +16,11 @@ builds:
       - -X skv/internal/version.Date={{.Date}}
     goos: [linux, darwin, windows]
     goarch: [amd64, arm64]
-archives: []
+archives:
+  - id: raw
+    ids: [skv]
+    format: binary
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
 checksum:
   name_template: "checksums.txt"
 sboms: []
