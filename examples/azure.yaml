@@ -1,8 +1,0 @@
----
-secrets:
-  - alias: jwt_secret
-    provider: azure
-    name: jwt-secret
-    env: JWT_SECRET
-    extras:
-      vault_url: https://myvault.vault.azure.net

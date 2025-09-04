@@ -1,10 +1,10 @@
 .PHONY: build lint test ci all
 
 build:
-	bash ./build.sh host
+	./build.sh host
 
 lint:
-	bash ./scripts/lint.sh
+	./scripts/lint.sh
 
 test:
 	go test ./...

@@ -1,8 +1,0 @@
----
-secrets:
-  - alias: service_password
-    provider: vault
-    name: kv/data/myapp/password
-    env: SERVICE_PASSWORD
-    extras:
-      address: http://127.0.0.1:8200

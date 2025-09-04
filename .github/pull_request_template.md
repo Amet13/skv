@@ -4,9 +4,9 @@
 
 ## Checklist
 
--   [ ] Tests added/updated
--   [ ] `bash ./build.sh host` passes
--   [ ] `go test ./...` passes
--   [ ] No secrets in logs or docs
+- [ ] Tests added/updated
+- [ ] `./build.sh host` passes
+- [ ] `go test ./...` passes
+- [ ] No secrets in logs or docs
 
 ## Related issues

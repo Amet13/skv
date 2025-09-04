@@ -3,9 +3,9 @@ name: CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: ["**"]
+    branches: [main]
 
 jobs:
   build-test:
@@ -19,7 +19,7 @@ jobs:
           go-version: "1.25.x"
           cache: true
       - name: Build
-        run: bash ./build.sh host
+        run: ./build.sh host
       - name: Lint and test with coverage (threshold)
         run: |
           go test ./... -coverprofile=coverage.out -covermode=atomic
@@ -32,17 +32,5 @@ jobs:
               }
             }
           '
-          bash ./scripts/lint.sh
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          files: coverage.out
-          fail_ci_if_error: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
-      - name: Upload artifact
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: skv-dist
-          path: dist/
+
+          ./scripts/lint.sh

@@ -107,11 +107,10 @@ See `docs/providers.md` for full provider documentation and examples.
 
 ## Documentation
 
-- Overview: `docs/overview.md`
 - CLI: `docs/cli.md`
 - Configuration: `docs/configuration.md`
 - Providers: `docs/providers.md`
-- Changelog: `CHANGELOG.md`
+- Changelog: see GitHub Releases
 
 ## Exit Codes
 
@@ -133,14 +132,7 @@ See `.github/CONTRIBUTING.md`, `.github/CODE_OF_CONDUCT.md`, and `.github/SECURI
 
 ### Linting locally
 
-Install pre-commit and enable hooks:
-
-```bash
-pip install pre-commit
-pre-commit install
-```
-
-Or run the lint script (auto-installs tools if missing):
+Run the lint script (auto-installs tools if missing):
 
 ```bash
 ./scripts/lint.sh
