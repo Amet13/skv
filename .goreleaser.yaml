@@ -18,13 +18,11 @@ builds:
     goos: [linux, darwin, windows]
     goarch: [amd64, arm64]
 archives:
-  - formats: [tar.gz]
-    ids: [skv]
-    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+  disable: true
 checksum:
   name_template: "checksums.txt"
 sboms:
-  - artifacts: archive
+  disable: true
 changelog:
   use: github
 release:

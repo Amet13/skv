@@ -9,7 +9,7 @@
   </p>
 </div>
 
-Fetch secrets from providers like AWS Secrets Manager and HashiCorp Vault, and inject them into a process environment or prints them to stdout.
+Fetch secrets from providers like AWS Secrets Manager and HashiCorp Vault, and inject them into a process environment or print them to stdout.
 
 ## Installation
 
@@ -17,13 +17,16 @@ Fetch secrets from providers like AWS Secrets Manager and HashiCorp Vault, and i
 - Rename it to `skv` and make it executable:
 
 ```bash
-chmod +x ./skv_* && mv ./skv_* /usr/local/bin/skv
+chmod +x ./skv_*
+mv ./skv_* /usr/local/bin/skv
 skv version
 ```
 
 ## Build from source
 
-Requirement: Go 1.25.x:
+Requirements:
+
+- Go 1.25.x
 
 ```bash
 ./build.sh host
@@ -95,24 +98,11 @@ Common flags:
 - `--timeout`: e.g., 5s, 30s
 - `--dry-run`: show what would happen without executing
 
-## Providers
-
-See `docs/providers.md` for full provider documentation and examples.
-
 ## Documentation
 
 - CLI: `docs/cli.md`
 - Configuration: `docs/configuration.md`
 - Providers: `docs/providers.md`
-- Changelog: see GitHub Releases
-
-## Exit Codes
-
-- 0 success
-- 2 configuration error
-- 3 provider error (network, auth, etc.)
-- 4 secret not found (or permission denied where indistinguishable)
-- 5 command execution failure
 
 ## Security
 
@@ -120,14 +110,6 @@ See `docs/providers.md` for full provider documentation and examples.
 - Values are only present in memory and in the environment of the child process during `run`.
 - Secret values are masked in dry-run output and logs by default.
 
-## Contributing
+## License
 
-See `.github/CONTRIBUTING.md`, `.github/CODE_OF_CONDUCT.md`, and `.github/SECURITY.md`.
-
-### Linting locally
-
-Run the lint script (auto-installs tools if missing):
-
-```bash
-./scripts/lint.sh
-```
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
