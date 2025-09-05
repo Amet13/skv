@@ -47,8 +47,8 @@ monitoring and alerting in production environments.`,
 				defer cancel()
 			}
 
-			fmt.Printf("🏥 Health check starting (timeout: %v)\n", timeoutDuration)
-			fmt.Printf("📊 Checking %d secret(s)\n\n", len(cfg.Secrets))
+			fmt.Printf("Health check starting (timeout: %v)\n", timeoutDuration)
+			fmt.Printf("Checking %d secret(s)\n\n", len(cfg.Secrets))
 
 			var healthyCount, totalCount int
 			var firstError error
@@ -60,12 +60,12 @@ monitoring and alerting in production environments.`,
 				}
 
 				totalCount++
-				fmt.Printf("🔍 Checking %s (%s)... ", secret.Alias, secret.Provider)
+				fmt.Printf("Checking %s (%s)... ", secret.Alias, secret.Provider)
 
 				spec := secret.ToSpec()
 				p, ok := provider.Get(spec.Provider)
 				if !ok {
-					fmt.Printf("❌ Provider not found\n")
+					fmt.Printf("ERROR: Provider not found\n")
 					if firstError == nil {
 						firstError = fmt.Errorf("provider %s not found", spec.Provider)
 					}
@@ -78,9 +78,9 @@ monitoring and alerting in production environments.`,
 
 				if err != nil {
 					if err == provider.ErrNotFound {
-						fmt.Printf("⚠️  Not found (%.2fs)\n", duration.Seconds())
+						fmt.Printf("WARNING: Not found (%.2fs)\n", duration.Seconds())
 					} else {
-						fmt.Printf("❌ Error: %v (%.2fs)\n", err, duration.Seconds())
+						fmt.Printf("ERROR: %v (%.2fs)\n", err, duration.Seconds())
 						if firstError == nil {
 							firstError = err
 						}
@@ -91,15 +91,15 @@ monitoring and alerting in production environments.`,
 				}
 			}
 
-			fmt.Printf("\n📈 Health check summary:\n")
+			fmt.Printf("\nHealth check summary:\n")
 			fmt.Printf("  Healthy: %d/%d (%.1f%%)\n", healthyCount, totalCount, float64(healthyCount)/float64(totalCount)*100)
 
 			if healthyCount == totalCount {
-				fmt.Printf("🎉 All secrets are healthy!\n")
+				fmt.Printf("All secrets are healthy!\n")
 				return nil
 			}
 
-			fmt.Printf("⚠️  %d secret(s) have issues\n", totalCount-healthyCount)
+			fmt.Printf("WARNING: %d secret(s) have issues\n", totalCount-healthyCount)
 			if firstError != nil {
 				return fmt.Errorf("health check failed: %w", firstError)
 			}

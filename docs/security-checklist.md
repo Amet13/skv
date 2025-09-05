@@ -2,60 +2,60 @@
 
 This document provides security best practices and guidelines for using `skv` safely in production environments.
 
-## 🔒 Core Security Principles
+## Core Security Principles
 
 ### Secret Handling
 
-- ✅ **Never write secrets to disk** - `skv` keeps secrets in memory only
-- ✅ **Mask secrets in output** - Use `--mask` flag (enabled by default) for dry-run and logs
-- ✅ **Inject into process environment** - Use `skv run` instead of exporting to shell
-- ✅ **Fail fast on missing secrets** - Use `--strict` mode (default) to catch issues early
+- **Never write secrets to disk** - `skv` keeps secrets in memory only
+- **Mask secrets in output** - Use `--mask` flag (enabled by default) for dry-run and logs
+- **Inject into process environment** - Use `skv run` instead of exporting to shell
+- **Fail fast on missing secrets** - Use `--strict` mode (default) to catch issues early
 
 ### Authentication & Authorization
 
-- ✅ **Use least-privileged IAM roles** for each provider
-- ✅ **Prefer short-lived credentials** where possible (STS tokens, service accounts)
-- ✅ **Rotate credentials regularly** and enforce versioning (e.g., AWS version stages)
-- ✅ **Use provider-specific authentication** (profiles, roles, service accounts)
+- **Use least-privileged IAM roles** for each provider
+- **Prefer short-lived credentials** where possible (STS tokens, service accounts)
+- **Rotate credentials regularly** and enforce versioning (e.g., AWS version stages)
+- **Use provider-specific authentication** (profiles, roles, service accounts)
 
 ### Network Security
 
-- ✅ **Restrict network access** to secret backends as needed
-- ✅ **Use TLS/HTTPS endpoints** for all provider communications
-- ✅ **Validate TLS certificates** - avoid `--insecure` flags in production
-- ✅ **Use VPC endpoints** when available (AWS PrivateLink, etc.)
+- **Restrict network access** to secret backends as needed
+- **Use TLS/HTTPS endpoints** for all provider communications
+- **Validate TLS certificates** - avoid `--insecure` flags in production
+- **Use VPC endpoints** when available (AWS PrivateLink, etc.)
 
 ### Configuration Security
 
-- ✅ **Protect configuration files** with appropriate file permissions (600/640)
-- ✅ **Use environment interpolation** `{{ VAR }}` instead of hardcoding credentials
-- ✅ **Validate configuration** before deployment
-- ✅ **Version control configuration** (without secrets) for auditability
+- **Protect configuration files** with appropriate file permissions (600/640)
+- **Use environment interpolation** `{{ VAR }}` instead of hardcoding credentials
+- **Validate configuration** before deployment
+- **Version control configuration** (without secrets) for auditability
 
 ### Logging & Monitoring
 
-- ✅ **Log at `info` or lower** in production; use `debug` only in trusted environments
-- ✅ **Monitor secret access patterns** for anomalies
-- ✅ **Set up alerting** for failed secret retrievals
-- ✅ **Audit configuration changes** and access patterns
+- **Log at `info` or lower** in production; use `debug` only in trusted environments
+- **Monitor secret access patterns** for anomalies
+- **Set up alerting** for failed secret retrievals
+- **Audit configuration changes** and access patterns
 
 ### Exec Provider Security
 
-- ✅ **Audit scripts thoroughly** used by the `exec` provider
-- ✅ **Keep scripts minimal** and focused on secret retrieval only
-- ✅ **Use absolute paths** for script execution
-- ✅ **Validate script permissions** and ownership
-- ✅ **Avoid shell injection** - use proper argument passing
+- **Audit scripts thoroughly** used by the `exec` provider
+- **Keep scripts minimal** and focused on secret retrieval only
+- **Use absolute paths** for script execution
+- **Validate script permissions** and ownership
+- **Avoid shell injection** - use proper argument passing
 
-## 🛡️ Provider-Specific Security
+## Provider-Specific Security
 
 ### AWS
 
-- ✅ Use IAM roles with minimal permissions
-- ✅ Enable CloudTrail logging for API calls
-- ✅ Use VPC endpoints for Secrets Manager/SSM
-- ✅ Enable secret rotation where possible
-- ✅ Use specific version stages (not `AWSPENDING`)
+- Use IAM roles with minimal permissions
+- Enable CloudTrail logging for API calls
+- Use VPC endpoints for Secrets Manager/SSM
+- Enable secret rotation where possible
+- Use specific version stages (not `AWSPENDING`)
 
 ```yaml
 # Secure AWS configuration
@@ -71,10 +71,10 @@ secrets:
 
 ### Google Cloud
 
-- ✅ Use service accounts with minimal permissions
-- ✅ Enable audit logging for Secret Manager
-- ✅ Use Workload Identity in GKE
-- ✅ Specify exact secret versions when possible
+- Use service accounts with minimal permissions
+- Enable audit logging for Secret Manager
+- Use Workload Identity in GKE
+- Specify exact secret versions when possible
 
 ```yaml
 # Secure GCP configuration
@@ -88,10 +88,10 @@ secrets:
 
 ### Azure
 
-- ✅ Use managed identities when possible
-- ✅ Enable Key Vault logging and monitoring
-- ✅ Use specific secret versions
-- ✅ Configure network access restrictions
+- Use managed identities when possible
+- Enable Key Vault logging and monitoring
+- Use specific secret versions
+- Configure network access restrictions
 
 ```yaml
 # Secure Azure configuration
@@ -100,17 +100,17 @@ secrets:
     provider: azure
     name: jwt-secret
     extras:
-      vault_url: https://myvault.vault.azure.net
+      vault_url: <https://myvault.vault.azure.net>
       version: "specific-version-id" # Pin to specific version
 ```
 
 ### HashiCorp Vault
 
-- ✅ Use AppRole authentication for services
-- ✅ Enable audit logging
-- ✅ Use short-lived tokens
-- ✅ Configure proper ACL policies
-- ✅ Use TLS for all communications
+- Use AppRole authentication for services
+- Enable audit logging
+- Use short-lived tokens
+- Configure proper ACL policies
+- Use TLS for all communications
 
 ```yaml
 # Secure Vault configuration
@@ -119,13 +119,13 @@ secrets:
     provider: vault
     name: kv/data/myapp/password
     extras:
-      address: https://vault.company.com # HTTPS only
+      address: <https://vault.company.com> # HTTPS only
       role_id: "{{ VAULT_ROLE_ID }}" # From environment
       secret_id: "{{ VAULT_SECRET_ID }}" # From environment
       namespace: production # Vault Enterprise
 ```
 
-## 🔐 Deployment Security
+## Deployment Security
 
 ### Container Security
 
@@ -188,7 +188,7 @@ steps:
       SKV_CONFIG: ./deployment/.skv.yaml
 ```
 
-## 🚨 Security Incident Response
+## Security Incident Response
 
 ### If Secrets Are Compromised
 
@@ -205,7 +205,7 @@ steps:
 3. **Update authentication tokens** used for interpolation
 4. **Audit recent access** to secret providers
 
-## 📋 Security Audit Checklist
+## Security Audit Checklist
 
 ### Pre-Production
 
@@ -236,7 +236,7 @@ steps:
 - [ ] Auditing configuration changes
 - [ ] Testing disaster recovery procedures
 
-## 🔍 Security Testing
+## Security Testing
 
 ### Test Commands
 

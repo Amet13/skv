@@ -11,11 +11,11 @@
 
 ## Multiple secret backends per cloud
 
-- AWS: Secrets Manager (`provider: aws`) and SSM Parameter Store (`provider: aws-ssm`).
-- GCP: Google Secret Manager (`provider: gcp`).
-- Azure: Key Vault (`provider: azure`).
-- Vault: KV v2 and generic logical reads (`provider: vault`).
-- Exec: external command (`provider: exec`).
+- **AWS**: Secrets Manager (`aws`) and SSM Parameter Store (`aws-ssm`).
+- **GCP**: Google Secret Manager (`gcp`).
+- **Azure**: Key Vault (`azure`) and App Configuration (`azure-appconfig`).
+- **Vault**: KV v2 and generic logical reads (`vault`).
+- **Exec**: external command (`exec`).
 
 Additional providers can follow the same pattern, using `Extras` to pass provider-specific parameters like profile, region, project, namespace, etc.
 

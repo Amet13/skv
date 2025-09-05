@@ -4,19 +4,13 @@ This page documents the supported providers, required environment variables, exa
 
 Supported providers and storages:
 
-- AWS Secrets Manager (`aws`)
-- AWS SSM Parameter Store (`aws-ssm`, `ssm`)
-- Google Secret Manager (`gcp`)
-- Azure Key Vault (`azure`)
-- Azure App Configuration (`azure-appconfig`, `appconfig`)
-- HashiCorp Vault KV v2 / logical (`vault`)
-- Exec command (`exec`)
-
-Planned (stubs registered, not implemented yet):
-
-- Oracle Cloud Infrastructure (OCI)
-- IBM Cloud
-- Alibaba Cloud
+- **AWS Secrets Manager** (`aws`, `aws-secrets-manager`)
+- **AWS SSM Parameter Store** (`aws-ssm`, `ssm`, `aws-parameter-store`)
+- **Google Secret Manager** (`gcp`, `gcp-secret-manager`)
+- **Azure Key Vault** (`azure`, `azure-key-vault`)
+- **Azure App Configuration** (`azure-appconfig`, `appconfig`)
+- **HashiCorp Vault** KV v2 / logical (`vault`)
+- **Exec command** (`exec`)
 
 ### AWS Secrets Manager
 
@@ -57,27 +51,6 @@ secrets:
 
 ### Azure Key Vault
 
-### Azure App Configuration (Parameter Store)
-
-- Auth: Default Azure credentials (managed identity, environment, or CLI login).
-- Name: Key name.
-- Extras (required):
-  - `endpoint`: e.g., https://<store>.azconfig.io
-- Extras (optional):
-  - `label`: App Configuration label to select
-- Example:
-
-```yaml
-secrets:
-  - alias: feature_flag
-    provider: azure-appconfig
-    name: myapp:feature:enabled
-    env: FEATURE_ENABLED
-    extras:
-      endpoint: https://myapp.azconfig.io
-      label: prod
-```
-
 - Auth: Default Azure credentials (managed identity, environment, or CLI login).
 - Name: Secret name. Optional specific `version` via `extras.version`.
 - Extras (required):
@@ -91,7 +64,28 @@ secrets:
     name: jwt-secret
     env: JWT_SECRET
     extras:
-      vault_url: https://myvault.vault.azure.net
+      vault_url: <https://myvault.vault.azure.net>
+```
+
+### Azure App Configuration (Parameter Store)
+
+- Auth: Default Azure credentials (managed identity, environment, or CLI login).
+- Name: Key name.
+- Extras (required):
+  - `endpoint`: e.g., <https://myapp.azconfig.io>
+- Extras (optional):
+  - `label`: App Configuration label to select
+- Example:
+
+```yaml
+secrets:
+  - alias: feature_flag
+    provider: azure-appconfig
+    name: myapp:feature:enabled
+    env: FEATURE_ENABLED
+    extras:
+      endpoint: <https://myapp.azconfig.io>
+      label: prod
 ```
 
 ### HashiCorp Vault (KV v2)

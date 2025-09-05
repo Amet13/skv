@@ -34,7 +34,7 @@ defaults:
 ```yaml
 secrets:
   - alias: string # local name, used by -s/--secret and logs
-    provider: string # aws | gcp | azure | vault | exec
+    provider: string # aws | aws-ssm | gcp | azure | azure-appconfig | vault | exec
     name: string # provider-specific path/name
     env: string # environment variable name to export
     extras: # optional provider-specific parameters
@@ -60,13 +60,22 @@ secrets:
     name: projects/<PROJECT>/secrets/<SECRET>/versions/latest
     env: API_KEY
 
-  # Azure
+  # Azure Key Vault
   - alias: jwt_secret
     provider: azure
     name: jwt-secret
     env: JWT_SECRET
     extras:
-      vault_url: https://<VAULT>.vault.azure.net
+      vault_url: <https://VAULT.vault.azure.net>
+
+  # Azure App Configuration
+  - alias: feature_flag
+    provider: azure-appconfig
+    name: myapp:feature:enabled
+    env: FEATURE_ENABLED
+    extras:
+      endpoint: <https://CONFIG.azconfig.io>
+      label: prod
 
   # Vault (KV v2)
   - alias: service_password

@@ -25,13 +25,13 @@ Fetch secrets from multiple providers and storages (AWS Secrets Manager, AWS SSM
 
 ### Supported providers and storages
 
-- AWS: Secrets Manager (`provider: aws`), SSM Parameter Store (`provider: aws-ssm`)
-- GCP: Secret Manager (`provider: gcp`)
-- Azure: Key Vault (`provider: azure`)
-- HashiCorp Vault: KV v2 and logical (`provider: vault`)
-- Exec: run trusted local command to get dynamic secrets (`provider: exec`)
+- **AWS**: Secrets Manager (`aws`), SSM Parameter Store (`aws-ssm`)
+- **GCP**: Secret Manager (`gcp`)
+- **Azure**: Key Vault (`azure`), App Configuration (`azure-appconfig`)
+- **HashiCorp Vault**: KV v2 and logical (`vault`)
+- **Exec**: run trusted local command to get dynamic secrets (`exec`)
 
-## 🚀 **Quick Start**
+## Quick Start
 
 1. **Install**: Download from [releases](https://github.com/Amet13/skv/releases/latest) or see [installation guide](docs/installation.md)
 2. **Configure**: `skv init` to generate config template
@@ -53,7 +53,7 @@ skv run --all -- env        # Inject all secrets into process
 skv export --all > .env     # Export to .env file
 ```
 
-## 📚 **Documentation**
+## Documentation
 
 For comprehensive documentation, see [`docs/index.md`](docs/index.md) with links to:
 
@@ -61,7 +61,7 @@ For comprehensive documentation, see [`docs/index.md`](docs/index.md) with links
 - Provider-specific guides, examples, and troubleshooting
 - Security checklist and development guidelines
 
-## 🛠️ **Development**
+## Development
 
 ```bash
 make build     # Build for current platform
@@ -71,13 +71,13 @@ make release   # Create release artifacts
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed development setup.
 
-## 🔒 **Security**
+## Security
 
-- ✅ **No disk writes** - Secrets are never written to disk by this tool
-- 🧠 **Memory only** - Values are only present in memory and child process environment during `run`
-- 🎭 **Secret masking** - Secret values are masked in dry-run output and logs by default
-- 🔐 **Secure by design** - Built with security-first principles
+- **No disk writes** - Secrets are never written to disk by this tool
+- **Memory only** - Values are only present in memory and child process environment during `run`
+- **Secret masking** - Secret values are masked in dry-run output and logs by default
+- **Secure by design** - Built with security-first principles
 
-## 📄 **License**
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

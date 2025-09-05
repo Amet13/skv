@@ -1,4 +1,4 @@
-# 📋 **Changelog**
+# Changelog
 
 All notable changes to this project will be documented in this file.
 
@@ -7,43 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### ✨ **Added**
+### Added
 
-- 🎯 **New Commands**: `init`, `validate`, and `health` for better user experience
-- 🧪 **Enhanced test coverage** across all providers (71.9% total coverage)
-- 📈 **Comprehensive E2E and integration tests** with realistic scenarios
-- 📦 **Enhanced GoReleaser** configuration with multi-platform support
-- 🔧 **Shell completion** scripts generation for all major shells
-- 📋 **SBOM generation** for supply chain security compliance
-- ✍️ **Package signing** with Cosign for enhanced security
-- 🍺 **Homebrew tap** support for easy macOS installation
-- 🪣 **Scoop bucket** support for Windows package management
-- 📦 **Linux package** distribution (deb, rpm, apk)
-- 🎨 **Consistent emoji formatting** across all documentation and code
-- 📁 **Standardized file naming** (lowercase with dashes for docs)
+- **New Commands**: `init`, `validate`, and `health` for better user experience
+- **Enhanced test coverage** across all providers (71.9% total coverage)
+- **Comprehensive E2E and integration tests** with realistic scenarios
+- **Enhanced GoReleaser** configuration with multi-platform support
+- **Shell completion** scripts generation for all major shells
+- **SBOM generation** for supply chain security compliance
+- **Package signing** with Cosign for enhanced security
+- **Homebrew tap** support for easy macOS installation
+- **Scoop bucket** support for Windows package management
+- **Linux package** distribution (deb, rpm, apk)
+- **Consistent emoji formatting** across all documentation and code
+- **Standardized file naming** (lowercase with dashes for docs)
 
-### 🔄 **Changed**
+### Changed
 
-- 📚 **Updated documentation** with comprehensive examples and emoji formatting
-- 🔧 **Improved error handling** and user experience across all commands
-- 🚀 **Enhanced CI/CD pipeline** with security scanning and comprehensive checks
-- 📝 **Restructured documentation** with consistent naming and better organization
-- 🎯 **Optimized build process** with better caching and parallel execution
+- **Updated documentation** with comprehensive examples and emoji formatting
+- **Improved error handling** and user experience across all commands
+- **Enhanced CI/CD pipeline** with security scanning and comprehensive checks
+- **Restructured documentation** with consistent naming and better organization
+- **Optimized build process** with better caching and parallel execution
 
-### 🧹 **Removed**
+### Removed
 
-- 🗑️ **Unimplemented provider stubs** (OCI, IBM, Alibaba) for cleaner codebase
-- 🐳 **Docker support** - removed to focus on core CLI functionality
-- 📝 **Future functionality mentions** replaced with current capabilities
-- 🧽 **Unused code** and outdated documentation sections
+- **Unimplemented provider stubs** (OCI, IBM, Alibaba) for cleaner codebase
+- **Docker support** - removed to focus on core CLI functionality
+- **Future functionality mentions** replaced with current capabilities
+- **Unused code** and outdated documentation sections
 
 ### 🐛 **Fixed**
 
-- ✅ **Test coverage** for mock provider and version package (now 100%)
+- **Test coverage** for mock provider and version package (now 100%)
 - 📖 **Documentation consistency** across all files with proper linking
-- 🔗 **Broken documentation links** after file renaming
-- 🔧 **Linting issues** and code quality improvements
-- 🧪 **Test reliability** with better mocking and error handling
+- **Broken documentation links** after file renaming
+- **Linting issues** and code quality improvements
+- **Test reliability** with better mocking and error handling
 
 ## [0.1.0] - 2024-01-01
 

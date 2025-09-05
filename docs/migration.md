@@ -59,14 +59,14 @@ secrets:
     name: secret/data/myapp/db
     env: DB_PASSWORD
     extras:
-      address: https://vault.company.com
+      address: <https://vault.company.com>
       key: password
   - alias: api_token
     provider: vault
     name: secret/data/myapp/api
     env: API_TOKEN
     extras:
-      address: https://vault.company.com
+      address: <https://vault.company.com>
       key: token
 ```
 
@@ -132,13 +132,13 @@ secrets:
     name: db-password
     env: DB_PASSWORD
     extras:
-      vault_url: https://MyVault.vault.azure.net
+      vault_url: <https://MyVault.vault.azure.net>
   - alias: api_key
     provider: azure-appconfig
     name: api-key
     env: API_KEY
     extras:
-      endpoint: https://MyConfig.azconfig.io
+      endpoint: <https://MyConfig.azconfig.io>
 ```
 
 ```bash

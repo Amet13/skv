@@ -18,6 +18,9 @@
 
 - Top-level headings start with `#` and sub-sections use `##`, `###`.
 - Use backticks for file paths, commands, and inline code.
+- Use angle brackets for URLs in examples: `<https://example.com>`
+- Use bold formatting for emphasis: `**important text**`
+- Avoid emojis in headers and lists (except user-facing CLI output)
 - Keep examples minimal and verified.
 
 ## Code

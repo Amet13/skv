@@ -30,10 +30,10 @@ is correct before using it in production.`,
 			}
 
 			fmt.Printf("Configuration loaded successfully from %s\n", getConfigPath())
-			fmt.Printf("📊 Found %d secret(s) configured\n", len(cfg.Secrets))
+			fmt.Printf("Found %d secret(s) configured\n", len(cfg.Secrets))
 
 			if verbose {
-				fmt.Println("\n📋 Configuration summary:")
+				fmt.Println("\nConfiguration summary:")
 				for _, secret := range cfg.Secrets {
 					spec := secret.ToSpec()
 					fmt.Printf("  - %s (%s) -> %s\n", secret.Alias, secret.Provider, spec.EnvName)
@@ -42,11 +42,11 @@ is correct before using it in production.`,
 
 			// Check provider registration
 			if checkProviders {
-				fmt.Println("\n🔍 Checking provider availability...")
+				fmt.Println("\nChecking provider availability...")
 				providerIssues := 0
 				for _, secret := range cfg.Secrets {
 					if _, ok := provider.Get(secret.Provider); !ok {
-						fmt.Printf("❌ Provider '%s' not found for secret '%s'\n", secret.Provider, secret.Alias)
+						fmt.Printf("ERROR: Provider '%s' not found for secret '%s'\n", secret.Provider, secret.Alias)
 						providerIssues++
 					} else if verbose {
 						fmt.Printf("Provider '%s' available for secret '%s'\n", secret.Provider, secret.Alias)
@@ -60,13 +60,13 @@ is correct before using it in production.`,
 
 			// Test secret connectivity (dry-run fetch)
 			if checkSecrets {
-				fmt.Println("\n🌐 Testing secret connectivity...")
+				fmt.Println("\nTesting secret connectivity...")
 				secretIssues := 0
 				for _, secret := range cfg.Secrets {
 					spec := secret.ToSpec()
 					p, ok := provider.Get(spec.Provider)
 					if !ok {
-						fmt.Printf("❌ Provider '%s' not available for secret '%s'\n", spec.Provider, secret.Alias)
+						fmt.Printf("ERROR: Provider '%s' not available for secret '%s'\n", spec.Provider, secret.Alias)
 						secretIssues++
 						continue
 					}
@@ -76,9 +76,9 @@ is correct before using it in production.`,
 					_, err := p.FetchSecret(ctx, spec)
 					if err != nil {
 						if err == provider.ErrNotFound {
-							fmt.Printf("⚠️  Secret '%s' not found in provider '%s'\n", secret.Alias, spec.Provider)
+							fmt.Printf("WARNING: Secret '%s' not found in provider '%s'\n", secret.Alias, spec.Provider)
 						} else {
-							fmt.Printf("❌ Error fetching secret '%s': %v\n", secret.Alias, err)
+							fmt.Printf("ERROR: Error fetching secret '%s': %v\n", secret.Alias, err)
 						}
 						secretIssues++
 					} else if verbose {
@@ -86,13 +86,13 @@ is correct before using it in production.`,
 					}
 				}
 				if secretIssues > 0 {
-					fmt.Printf("\n⚠️  Found %d connectivity issues (this might be expected in some environments)\n", secretIssues)
+					fmt.Printf("\nWARNING: Found %d connectivity issues (this might be expected in some environments)\n", secretIssues)
 				} else {
 					fmt.Println("All secrets are accessible")
 				}
 			}
 
-			fmt.Println("\n🎉 Validation completed successfully!")
+			fmt.Println("\nValidation completed successfully!")
 			return nil
 		},
 	}

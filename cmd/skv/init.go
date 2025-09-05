@@ -43,9 +43,9 @@ This helps you get started quickly with a properly structured configuration file
 			}
 
 			fmt.Printf("Configuration template created: %s\n", outputFile)
-			fmt.Println("📝 Edit the file to add your actual secret names and configuration.")
-			fmt.Println("🔍 Use 'skv validate' to check your configuration.")
-			fmt.Println("🚀 Use 'skv list' to see your configured secrets.")
+			fmt.Println("Edit the file to add your actual secret names and configuration.")
+			fmt.Println("Use 'skv validate' to check your configuration.")
+			fmt.Println("Use 'skv list' to see your configured secrets.")
 
 			return nil
 		},
