@@ -13,12 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Enhanced test coverage** across all providers (71.9% total coverage)
 - **Comprehensive E2E and integration tests** with realistic scenarios
 - **Enhanced GoReleaser** configuration with multi-platform support
-- **Shell completion** scripts generation for all major shells
-- **SBOM generation** for supply chain security compliance
-- **Package signing** with Cosign for enhanced security
-- **Homebrew tap** support for easy macOS installation
-- **Scoop bucket** support for Windows package management
-- **Linux package** distribution (deb, rpm, apk)
+- **Multi-platform binary releases** for Linux, macOS, and Windows
 - **Consistent emoji formatting** across all documentation and code
 - **Standardized file naming** (lowercase with dashes for docs)
 
