@@ -39,8 +39,7 @@ build_target() {
     fi
     (cd "$REPO_ROOT" &&
         GOOS="$goos" GOARCH="$goarch" \
-            go mod tidy &&
-        go build "${build_flags[@]}" -ldflags "${ldflags[*]}" -o "$DIST_DIR/skv_${goos}_${goarch}" ./cmd/skv)
+            go build "${build_flags[@]}" -ldflags "${ldflags[*]}" -o "$DIST_DIR/skv_${goos}_${goarch}" ./cmd/skv)
 }
 
 case "$MODE" in
