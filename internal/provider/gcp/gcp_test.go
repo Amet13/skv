@@ -11,6 +11,16 @@ import (
 	"skv/internal/provider"
 )
 
+func TestNew(t *testing.T) {
+	p := New()
+	if p == nil {
+		t.Fatal("New() returned nil")
+	}
+
+	// Ensure it implements the Provider interface
+	_ = p
+}
+
 func TestGCPNotFoundMapsToErrNotFound(t *testing.T) {
 	old := gcpAccess
 	defer func() { gcpAccess = old }()

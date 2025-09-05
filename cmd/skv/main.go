@@ -82,15 +82,13 @@ func newRootCmd() *cobra.Command {
 	provider.Register("appconfig", azureprovider.NewAppConfig())
 	provider.Register("exec", execprovider.New())
 
-	// Future/stub providers for extensibility (return clear not-implemented errors)
-	provider.Register("oci", provider.NewNotImplementedProvider("oci"))
-	provider.Register("ibm", provider.NewNotImplementedProvider("ibm"))
-	provider.Register("alibaba", provider.NewNotImplementedProvider("alibaba"))
-
+	cmd.AddCommand(newInitCmd())
 	cmd.AddCommand(newGetCmd())
 	cmd.AddCommand(newRunCmd())
 	cmd.AddCommand(newListCmd())
 	cmd.AddCommand(newExportCmd())
+	cmd.AddCommand(newValidateCmd())
+	cmd.AddCommand(newHealthCmd())
 	cmd.AddCommand(newVersionCmd())
 	cmd.AddCommand(newCompletionCmd())
 

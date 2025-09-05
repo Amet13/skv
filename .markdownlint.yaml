@@ -1,5 +1,7 @@
 default: true
 MD013: false # line length
+MD024: false # duplicate headings
+MD029: false # ordered list item prefix
 MD033: false # inline HTML
 MD041: false # first line heading
 MD030: true # spaces after list markers

@@ -6,6 +6,16 @@ import (
 	"skv/internal/provider"
 )
 
+func TestNew(t *testing.T) {
+	p := New()
+	if p == nil {
+		t.Fatal("New() returned nil")
+	}
+
+	// Ensure it implements the Provider interface
+	_ = p
+}
+
 func TestKv2MountAndPath(t *testing.T) {
 	m, p, ok := kv2MountAndPath(provider.SecretSpec{Name: "kv/data/foo/bar"})
 	if !ok || m != "kv" || p != "foo/bar" {

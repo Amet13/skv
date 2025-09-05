@@ -1,72 +1,283 @@
 ---
-description: Project rules for the skv Go CLI application.
+description: Enhanced project rules for the skv Go CLI application with AI-specific guidance.
 globs:
   - "**/*.go"
+  - "**/*.md"
+  - "**/*.yaml"
+  - "**/*.yml"
+  - "**/*.sh"
 alwaysApply: true
 ---
 
-# `skv` Project Rules
+# 🔐 **`skv` Project Rules for AI Agents**
 
-This document outlines the core principles, architecture, and coding standards for the `skv` project. These rules are to be followed to ensure a consistent, maintainable, and high-quality codebase.
+This document provides comprehensive guidance for AI agents (like Claude Sonnet) working on the `skv` project. These rules ensure consistent, secure, and maintainable code.
 
-## 1. Core Principles
+## 🎯 **1. Core Principles**
 
-- **Security First:** The primary goal of `skv` is to handle secrets securely. All code related to fetching, handling, and injecting secrets must be written with security as the top priority.
-- **Simplicity and Reliability:** The CLI should be intuitive and easy to use. The core logic must be reliable and fail-safe, with clear error messages.
-- **Extensibility:** The architecture should allow for easy addition of new secret providers (e.g., GCP Secret Manager, Azure Key Vault) without major refactoring.
-- **Maintainability:** Code should be clean, well-documented, and follow standard Go conventions.
+### **Security First** 🛡️
 
-## 2. Architecture and Structure
+- **Primary Goal**: Handle secrets securely at all times
+- **Never log secrets**: Use masking, redaction, or avoid logging entirely
+- **Memory-only operations**: Secrets should never be written to disk
+- **Fail-safe design**: Prefer failing securely over potentially exposing data
+- **Input validation**: Always validate and sanitize inputs, especially from config files
 
-The `skv` project is structured as a standard Go module.
+### **Simplicity and Reliability** ✨
 
-- `cmd/skv/main.go`: CLI entry point; command parsing and provider registration.
-- `internal/config/`: Configuration loading, discovery, interpolation, and validation.
-- `internal/provider/`: Provider interface, registry, and implementations (e.g., `aws`, `gcp`, `azure`, `vault`, `exec`).
-- `internal/version/`: Build-time version information.
+- **Intuitive CLI**: Commands should be self-explanatory with helpful error messages
+- **Graceful degradation**: Handle missing dependencies or network issues gracefully
+- **Clear error messages**: Provide actionable guidance when things go wrong
+- **Consistent behavior**: Similar operations should work similarly across providers
 
-## 3. Go Best Practices
+### **Extensibility** 🔌
 
-- **Go Modules:** The project uses Go Modules for dependency management.
-- **Error Handling:** Errors must be handled explicitly and gracefully. Do not ignore errors. Use `fmt.Errorf` with a descriptive message to wrap errors for better context.
+- **Provider pattern**: New secret providers should integrate seamlessly
+- **Minimal interface**: Keep the `Provider` interface as simple as possible
+- **Configuration-driven**: Behavior should be configurable rather than hardcoded
+- **Backwards compatibility**: Maintain compatibility when adding features
 
-  - **Example:**
+### **Maintainability** 🧹
 
-    ```go
-    // Correct
-    _, err := client.FetchSecret()
-    if err != nil {
-        return fmt.Errorf("failed to fetch secret from provider: %w", err)
-    }
+- **Clean code**: Follow Go idioms and conventions
+- **Comprehensive docs**: All exported items need clear GoDoc comments
+- **Test coverage**: Aim for >70% coverage, 100% for critical paths
+- **Professional formatting**: Use clear, professional comments in code; emojis are acceptable in documentation
 
-    // Incorrect
-    // _, err := client.FetchSecret()
-    // if err != nil {
-    //     log.Fatal(err) // Hides the original error context
-    // }
-    ```
+## 🏗️ **2. Architecture and Structure**
 
-- **Concurrency:** Use `sync.Mutex` for locking and `chan` for communication between goroutines. Avoid global variables.
-- **Testing:** All new functionality must be accompanied by unit tests. Strive for high test coverage. Use `go test -race` to check for race conditions.
-- **Documentation:** All exported functions, variables, and types must have a clear and concise GoDoc comment.
+### **Project Layout**
 
-## 4. `Provider` Interface
+```
+skv/
+├── cmd/skv/                    # 🎯 CLI entry point and commands
+│   ├── main.go                # 🚀 Application bootstrap and provider registration
+│   ├── get.go, run.go, etc.   # 💻 Individual command implementations
+│   └── *_test.go              # 🧪 Command-level tests
+├── internal/
+│   ├── config/                # ⚙️ Configuration loading and validation
+│   ├── provider/              # 🔌 Provider interface and implementations
+│   │   ├── aws/               # ☁️ AWS Secrets Manager & SSM
+│   │   ├── gcp/               # 🌐 Google Secret Manager
+│   │   ├── azure/             # 🔷 Azure Key Vault & App Config
+│   │   ├── vault/             # 🗄️ HashiCorp Vault
+│   │   ├── exec/              # 🔧 External command execution
+│   │   └── mock/              # 🎭 Testing mock provider
+│   └── version/               # 📦 Build-time version information
+├── docs/                      # 📚 User and developer documentation
+│   ├── dev/                   # 🛠️ Developer-specific docs
+│   └── *.md                   # 📖 User guides and references
+└── scripts/                   # 🔧 Build and development scripts
+```
 
-All secret providers must adhere to the minimal `provider.Provider` interface.
+### **Key Components**
+
+- **CLI Commands**: Each command is a separate file with focused responsibility
+- **Provider Registry**: Central registration in `main.go` with multiple aliases
+- **Configuration**: YAML-based with environment variable interpolation
+- **Testing**: Unit tests alongside implementation files, E2E tests in `cmd/skv/`
+
+## 🐹 **3. Go Best Practices**
+
+### **Error Handling** ⚠️
 
 ```go
-// internal/provider/provider.go
-type Provider interface {
-	FetchSecret(ctx context.Context, spec SecretSpec) (string, error)
+// ✅ Correct: Wrap errors with context
+_, err := client.FetchSecret()
+if err != nil {
+    return fmt.Errorf("🔑 failed to fetch secret from %s provider: %w", providerName, err)
 }
 
-type SecretSpec struct {
-	Alias    string
-	Name     string
-	Provider string
-	EnvName  string
-	Extras   map[string]string
+// ❌ Incorrect: Lose error context
+_, err := client.FetchSecret()
+if err != nil {
+    log.Fatal(err) // Hides the original error context
 }
 ```
 
-Providers are registered in `cmd/skv/main.go` under one or more names (aliases). Use `spec.Extras` for provider-specific options (e.g., `region`, `profile`, `project`, `vault_url`, `namespace`).
+### **Concurrency** ⚡
+
+- Use `sync.Mutex` for protecting shared state
+- Use `chan` for goroutine communication
+- Avoid global variables; pass context explicitly
+- Always use `context.Context` for cancellation and timeouts
+
+### **Testing** 🧪
+
+- **Unit tests**: Test individual functions and methods
+- **Integration tests**: Test provider interactions (with mocking)
+- **E2E tests**: Test complete workflows end-to-end
+- **Table-driven tests**: Use for testing multiple scenarios
+- **Race detection**: Always run `go test -race`
+
+### **Documentation** 📝
+
+```go
+// 🔑 FetchSecret retrieves a secret value from the provider.
+// It returns the secret value or an error if the secret cannot be retrieved.
+// The context can be used for cancellation and timeout control.
+func (p *provider) FetchSecret(ctx context.Context, spec SecretSpec) (string, error) {
+    // Implementation
+}
+```
+
+### **Code Style** 🎨
+
+- **Comments**: Use clear, professional language without emojis
+- **Error messages**: Focus on clarity and actionable information
+- **Documentation**: Emojis are acceptable for visual organization
+- **Logs**: Keep professional, avoid emojis in production logs
+
+## 🔌 **4. Provider Interface**
+
+### **Core Interface**
+
+```go
+// 🔑 Provider fetches a secret value by spec.
+type Provider interface {
+    FetchSecret(ctx context.Context, spec SecretSpec) (string, error)
+}
+
+// 📋 SecretSpec is an immutable specification for a secret fetch.
+type SecretSpec struct {
+    Alias    string            // 🏷️ Human-readable alias for the secret
+    Name     string            // 📝 Provider-specific secret name/path
+    Provider string            // 🔌 Provider type (aws, gcp, azure, etc.)
+    EnvName  string            // 🌍 Environment variable name
+    Extras   map[string]string // ⚙️ Provider-specific configuration options
+}
+```
+
+### **Provider Implementation Guidelines**
+
+- **Registration**: Register in `main.go` with descriptive aliases
+- **Error handling**: Return `provider.ErrNotFound` for missing secrets
+- **Context usage**: Respect context cancellation and timeouts
+- **Configuration**: Use `spec.Extras` for provider-specific options
+- **Testing**: Include both unit and integration tests
+
+### **Common Extras Options**
+
+- `region`: AWS region, GCP zone, Azure location
+- `profile`: AWS profile, credential profile name
+- `project`: GCP project ID
+- `vault_url`: HashiCorp Vault server URL
+- `namespace`: Vault namespace or similar
+- `version`: Secret version (if supported)
+
+## 🧪 **5. Testing Guidelines**
+
+### **Test Structure**
+
+```go
+func TestProviderFetchSecret(t *testing.T) {
+    tests := []struct {
+        name    string
+        spec    provider.SecretSpec
+        want    string
+        wantErr bool
+    }{
+        {
+            name: "🔑 successful secret fetch",
+            spec: provider.SecretSpec{
+                Name: "test-secret",
+                Extras: map[string]string{"region": "us-east-1"},
+            },
+            want:    "secret-value",
+            wantErr: false,
+        },
+        {
+            name: "❌ secret not found",
+            spec: provider.SecretSpec{Name: "nonexistent"},
+            wantErr: true,
+        },
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            // Test implementation
+        })
+    }
+}
+```
+
+### **Test Coverage Requirements**
+
+- **Critical paths**: 100% coverage (secret fetching, error handling)
+- **Overall project**: >70% coverage
+- **New features**: Must include comprehensive tests
+- **Edge cases**: Test error conditions, timeouts, cancellation
+
+## 🔒 **6. Security Requirements**
+
+### **Secret Handling**
+
+- **Never log secrets**: Use masking or avoid logging
+- **Memory-only**: No disk writes for secret values
+- **Short-lived**: Minimize time secrets spend in memory
+- **Secure cleanup**: Zero out memory when possible
+
+### **Input Validation**
+
+- **Configuration files**: Validate structure and required fields
+- **Provider inputs**: Sanitize and validate all provider-specific options
+- **Command arguments**: Validate CLI arguments and flags
+- **Environment variables**: Handle missing or invalid values gracefully
+
+### **Error Messages**
+
+- **No secret leakage**: Never include secret values in error messages
+- **Helpful context**: Provide enough information for debugging
+- **Security boundaries**: Don't expose internal system details
+
+## 🎯 **7. AI Agent Guidelines**
+
+### **When Writing Code**
+
+- **Follow style guide**: Use professional, clear comments without emojis
+- **Security first**: Always consider security implications
+- **Test thoroughly**: Include comprehensive tests with new code
+- **Document clearly**: Explain complex logic and design decisions
+
+### **When Refactoring**
+
+- **Preserve behavior**: Maintain existing functionality
+- **Improve incrementally**: Make small, focused changes
+- **Update tests**: Ensure tests still pass and cover new scenarios
+- **Update docs**: Keep documentation in sync with code changes
+
+### **When Adding Features**
+
+- **Provider pattern**: Follow existing provider implementation patterns
+- **Configuration**: Make features configurable through YAML
+- **Error handling**: Use consistent error handling patterns
+- **Backwards compatibility**: Don't break existing configurations
+
+### **Common Patterns to Follow**
+
+- **Context propagation**: Always pass context through call chains
+- **Error wrapping**: Use `fmt.Errorf("context: %w", err)` pattern
+- **Table-driven tests**: Use for testing multiple scenarios
+- **Interface segregation**: Keep interfaces minimal and focused
+
+## 📋 **8. Code Review Checklist**
+
+### **Before Submitting**
+
+- [ ] 🧪 All tests pass (`go test ./...`)
+- [ ] 🔍 Linting passes (`golangci-lint run`)
+- [ ] 📊 Coverage maintained or improved
+- [ ] 📝 Documentation updated
+- [ ] 🔒 Security implications considered
+- [ ] ⚡ Performance impact assessed
+- [ ] 🎨 Professional formatting applied consistently
+
+### **Architecture Review**
+
+- [ ] 🏗️ Follows established patterns
+- [ ] 🔌 Provider interface properly implemented
+- [ ] ⚙️ Configuration properly handled
+- [ ] 🔄 Error handling consistent
+- [ ] 🧹 No code duplication
+
+This document serves as the definitive guide for AI agents working on the `skv` project. Following these rules ensures high-quality, secure, and maintainable code.

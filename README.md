@@ -30,7 +30,6 @@ Fetch secrets from multiple providers and storages (AWS Secrets Manager, AWS SSM
 - Azure: Key Vault (`provider: azure`)
 - HashiCorp Vault: KV v2 and logical (`provider: vault`)
 - Exec: run trusted local command to get dynamic secrets (`provider: exec`)
-- Planned: Oracle (OCI), IBM Cloud, Alibaba Cloud (currently registered as stubs)
 
 ## Installation
 
@@ -94,13 +93,78 @@ Notes:
 
 ## Usage
 
-Show version:
+### Quick Start
+
+Generate a configuration template:
+
+```bash
+skv init                    # Create ~/.skv.yaml with examples
+skv init --provider aws     # AWS-focused template
+skv init --output .skv.yaml # Custom output location
+```
+
+Validate your configuration:
+
+```bash
+skv validate                      # Check configuration syntax
+skv validate --check-secrets      # Test connectivity to providers
+skv validate --verbose            # Show detailed validation results
+```
+
+### Basic Commands
+
+Show version and help:
 
 ```bash
 skv version
+skv --help
+skv <command> --help
 ```
 
-Generate completion:
+List configured secrets:
+
+```bash
+skv list                    # Show all configured secrets
+skv list --format json     # JSON output for scripting
+```
+
+Fetch a single secret:
+
+```bash
+skv get db-password                           # Get secret value
+skv get db-password --timeout 5s --retries 2 # With timeout and retries
+```
+
+### Running Applications with Secrets
+
+Inject secrets into a process:
+
+```bash
+skv run --all -- env | grep -E "DB_PASSWORD|API_TOKEN"
+skv run -s db-password -s api-token -- ./your-app --flag
+skv run --secrets db-password,api-token --dry-run -- echo "hello"
+```
+
+### Export and Health Checks
+
+Export secrets to files:
+
+```bash
+skv export --all --format env > .env
+skv export --secrets a,b --format yaml --output secrets.yaml
+```
+
+Health checks for monitoring:
+
+```bash
+skv health                    # Check all secrets
+skv health --secret db-pass   # Check specific secret
+skv health --timeout 30s      # Custom timeout
+```
+
+### Shell Completion
+
+Generate completion scripts:
 
 ```bash
 # Bash
@@ -111,29 +175,7 @@ mkdir -p ~/.zfunc/ && skv completion zsh > ~/.zfunc/_skv && echo 'fpath+=(~/.zfu
 skv completion fish > ~/.config/fish/completions/skv.fish
 ```
 
-Fetch a single secret and print to stdout:
-
-```bash
-skv get db-password --timeout 5s --retries 2 --retry-delay 250ms
-```
-
-Inject secrets into a process:
-
-```bash
-skv run --all -- env | grep -E "DB_PASSWORD|MYAPP_API_TOKEN"
-skv run -s db-password -s api-token --retries 2 -- ./your-app --flag
-skv run --secrets db-password,api-token --dry-run -- echo "hello"
-```
-
-List and export:
-
-```bash
-skv list --format json
-skv export --all --format env > .env
-skv export --secrets a,b --format yaml --output secrets.yaml
-```
-
-Common flags:
+### Common Flags
 
 - `--config`: path to config file
 - `--log-level`: error|warn|info|debug
@@ -141,48 +183,51 @@ Common flags:
 - `--retries` and `--retry-delay`: simple retry policy for fetches
 - `--dry-run`: show what would happen without executing
 
-## Documentation
+## 📚 **Documentation**
 
-- Docs index: `docs/index.md`
-- CLI: `docs/cli.md`
-- Configuration: `docs/configuration.md`
-- Providers and storages: `docs/providers.md`
-- Developer guide (extensibility): `docs/DEVELOPING_PROVIDERS.md`
-- Troubleshooting: `docs/TROUBLESHOOTING.md`
-- Security checklist: `docs/SECURITY_CHECKLIST.md`
-- Examples: `docs/EXAMPLES.md`
-- Conventions: `docs/CONVENTIONS.md`
+- 🏠 **Docs index**: [`docs/index.md`](docs/index.md)
+- 💻 **CLI reference**: [`docs/cli.md`](docs/cli.md)
+- ⚙️ **Configuration**: [`docs/configuration.md`](docs/configuration.md)
+- 🔌 **Providers**: [`docs/providers.md`](docs/providers.md)
+- 🛠️ **Developer guide**: [`docs/dev/developing-providers.md`](docs/dev/developing-providers.md)
+- 🚨 **Troubleshooting**: [`docs/troubleshooting.md`](docs/troubleshooting.md)
+- 🔒 **Security checklist**: [`docs/security-checklist.md`](docs/security-checklist.md)
+- 📋 **Examples**: [`docs/examples.md`](docs/examples.md)
+- 📝 **Conventions**: [`docs/dev/conventions.md`](docs/dev/conventions.md)
+- 🚀 **Installation**: [`docs/installation.md`](docs/installation.md)
+- 🔄 **Migration guide**: [`docs/migration.md`](docs/migration.md)
 
-## Development
+## 🛠️ **Development**
 
-Requirements:
+**Requirements:**
 
-- Go 1.25.x
+- 🐹 Go 1.25.x
 
 ```bash
-make build     # host
-make build-all # small cross-build matrix
+make build     # 🏗️ Build for host platform
+make build-all # 🌍 Cross-build for multiple platforms
 ```
 
 Built artifacts are written to `dist/`.
 
-## Common tasks (Make)
+## 🎯 **Common Tasks (Make)**
 
 ```bash
-make fmt       # format Go, shell, markdown, YAML
-make lint      # run all linters
-make test      # run tests
-make cover     # run tests with coverage gate
-make clean     # remove dist/
-make release   # local snapshot via GoReleaser (no publish)
+make fmt       # 🎨 Format Go, shell, markdown, YAML
+make lint      # 🔍 Run all linters
+make test      # 🧪 Run tests
+make cover     # 📊 Run tests with coverage gate
+make clean     # 🧹 Remove dist/
+make release   # 📦 Local snapshot via GoReleaser (no publish)
 ```
 
-## Security
+## 🔒 **Security**
 
-- Secrets are never written to disk by this tool.
-- Values are only present in memory and in the environment of the child process during `run`.
-- Secret values are masked in dry-run output and logs by default.
+- ✅ **No disk writes** - Secrets are never written to disk by this tool
+- 🧠 **Memory only** - Values are only present in memory and child process environment during `run`
+- 🎭 **Secret masking** - Secret values are masked in dry-run output and logs by default
+- 🔐 **Secure by design** - Built with security-first principles
 
-## License
+## 📄 **License**
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

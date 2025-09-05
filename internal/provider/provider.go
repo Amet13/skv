@@ -3,7 +3,6 @@ package provider
 
 import (
 	"context"
-	"fmt"
 )
 
 // Provider fetches a secret value by spec.
@@ -13,13 +12,14 @@ type Provider interface {
 
 // SecretSpec is an immutable specification for a secret fetch.
 type SecretSpec struct {
-	Alias    string
-	Name     string
-	Provider string
-	EnvName  string
-	Extras   map[string]string
+	Alias    string            // Human-readable alias for the secret
+	Name     string            // Provider-specific secret name/path
+	Provider string            // Provider type (aws, gcp, azure, etc.)
+	EnvName  string            // Environment variable name
+	Extras   map[string]string // Provider-specific configuration options
 }
 
+// Global registry of available providers
 var registry = map[string]Provider{}
 
 // Register adds a provider implementation under a name.
@@ -31,15 +31,5 @@ func Register(name string, p Provider) {
 func Get(name string) (Provider, bool) {
 	p, ok := registry[name]
 	return p, ok
-}
-
-// NotImplementedProvider returns a provider that always errors with a clear message.
-type notImpl struct{ name string }
-
-// NewNotImplementedProvider returns a stub provider that always fails.
-func NewNotImplementedProvider(name string) Provider { return &notImpl{name: name} }
-
-func (n *notImpl) FetchSecret(_ context.Context, _ SecretSpec) (string, error) {
-	return "", fmt.Errorf("provider %s not implemented yet", n.name)
 }
 

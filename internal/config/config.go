@@ -15,31 +15,31 @@ import (
 
 // Config is the top-level configuration.
 type Config struct {
-	Defaults Defaults `yaml:"defaults"`
-	Secrets  []Secret `yaml:"secrets"`
+	Defaults Defaults `yaml:"defaults"` // Global default parameters
+	Secrets  []Secret `yaml:"secrets"`  // List of secrets to manage
 }
 
 // Defaults holds global default parameters merged into each secret unless overridden.
 type Defaults struct {
-	Region  string            `yaml:"region"`
-	Address string            `yaml:"address"`
-	Token   string            `yaml:"token"`
-	Extras  map[string]string `yaml:"extras"`
+	Region  string            `yaml:"region"`  // Default AWS region or similar
+	Address string            `yaml:"address"` // Default server address (e.g., Vault URL)
+	Token   string            `yaml:"token"`   // Default authentication token
+	Extras  map[string]string `yaml:"extras"`  // Provider-specific defaults
 }
 
 // Secret represents a single secret to fetch and where to place it.
 type Secret struct {
-	Alias    string            `yaml:"alias"`
-	Provider string            `yaml:"provider"`
-	Name     string            `yaml:"name"`
-	Env      string            `yaml:"env"`
-	Region   string            `yaml:"region"`
-	Address  string            `yaml:"address"`
-	Token    string            `yaml:"token"`
-	Path     string            `yaml:"path"`
-	Version  *int              `yaml:"version"`
-	Metadata map[string]string `yaml:"metadata"`
-	Extras   map[string]string `yaml:"extras"`
+	Alias    string            `yaml:"alias"`    // Human-readable identifier
+	Provider string            `yaml:"provider"` // Provider type (aws, gcp, etc.)
+	Name     string            `yaml:"name"`     // Provider-specific secret path/name
+	Env      string            `yaml:"env"`      // Environment variable name
+	Region   string            `yaml:"region"`   // Provider region (AWS, GCP zones, etc.)
+	Address  string            `yaml:"address"`  // Provider address (Vault URL, etc.)
+	Token    string            `yaml:"token"`    // Authentication token
+	Path     string            `yaml:"path"`     // Secret path (for Vault-like providers)
+	Version  *int              `yaml:"version"`  // Secret version (if supported)
+	Metadata map[string]string `yaml:"metadata"` // Additional metadata
+	Extras   map[string]string `yaml:"extras"`   // Provider-specific options
 }
 
 // Load reads the configuration from file, applying env interpolation and validation.
@@ -178,7 +178,7 @@ func (c *Config) validate() error {
 	return nil
 }
 
-// FindByAlias returns the secret with the given alias.
+// FindByAlias returns the secret with the given alias, or nil if not found.
 func (c *Config) FindByAlias(alias string) (*Secret, bool) {
 	for i := range c.Secrets {
 		if c.Secrets[i].Alias == alias {
@@ -188,7 +188,7 @@ func (c *Config) FindByAlias(alias string) (*Secret, bool) {
 	return nil, false
 }
 
-// ToSpec converts the secret into a provider-agnostic spec.
+// ToSpec converts a Secret to a provider.SecretSpec for use with providers.
 func (s Secret) ToSpec() provider.SecretSpec {
 	envName := s.Env
 	if strings.TrimSpace(envName) == "" {

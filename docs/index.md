@@ -1,18 +1,19 @@
-## skv Documentation
+# 🔐 **skv Documentation**
 
-## Overview
+## 🌟 **Overview**
 
-skv is a cross-cloud CLI to fetch secrets from multiple providers and storages, and inject them into process environments, export them, or print to stdout.
+**skv** is a cross-cloud CLI to fetch secrets from multiple providers and storages, and inject them into process environments, export them, or print to stdout.
 
-- Unified config across clouds
-- Safe injection with masking and dry-run
-- Concurrency, retries, timeouts
-- Extensible provider model
+- ☁️ **Unified config** across clouds
+- 🛡️ **Safe injection** with masking and dry-run
+- ⚡ **Concurrency, retries, timeouts**
+- 🔌 **Extensible provider** model
 
-## Quickstart
+## 🚀 **Quickstart**
 
-1. Install: see README Installation.
-2. Create config `~/.skv.yaml`:
+1. 📥 **Install**: see [installation.md](installation.md)
+2. 🎯 **Generate config template**: `skv init`
+3. ✏️ **Edit** `~/.skv.yaml`:
 
 ```yaml
 secrets:
@@ -24,18 +25,23 @@ secrets:
       region: us-east-1
 ```
 
-1. Use the CLI:
+4. ✅ **Validate and use**:
 
 ```bash
-skv list
-skv get db_password
-skv export --all --env-file > .env
-skv run --all -- -- env | grep DB_PASSWORD
+skv validate                           # ✅ Check configuration
+skv list                              # 📋 Show configured secrets
+skv get db_password                   # 🔑 Get single secret
+skv export --all --format env > .env # 📤 Export to file
+skv run --all -- env | grep DB_PASSWORD  # 🚀 Run with secrets
 ```
 
-## Reference
+## 📚 **Reference**
 
-- CLI reference: `docs/cli.md`
-- Configuration: `docs/configuration.md`
-- Providers and storages: `docs/providers.md`
-- Developer guide: `docs/DEVELOPING_PROVIDERS.md`
+- 💻 **CLI reference**: [`cli.md`](cli.md)
+- ⚙️ **Configuration**: [`configuration.md`](configuration.md)
+- 🔌 **Providers**: [`providers.md`](providers.md)
+- 🛠️ **Developer guide**: [`dev/developing-providers.md`](dev/developing-providers.md)
+- 🚨 **Troubleshooting**: [`troubleshooting.md`](troubleshooting.md)
+- 🔒 **Security**: [`security-checklist.md`](security-checklist.md)
+- 📋 **Examples**: [`examples.md`](examples.md)
+- 🔄 **Migration**: [`migration.md`](migration.md)

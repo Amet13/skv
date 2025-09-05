@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"errors"
 	"testing"
 )
 
@@ -27,11 +26,10 @@ func TestRegistry(t *testing.T) {
 	}
 }
 
-func TestNotImplemented(t *testing.T) {
-	p := NewNotImplementedProvider("x")
-	_, err := p.FetchSecret(context.Background(), SecretSpec{})
-	if err == nil || !errors.Is(err, err) { // just check non-nil; message checked implicitly
-		t.Fatalf("expected error")
+func TestUnknownProvider(t *testing.T) {
+	_, ok := Get("nonexistent")
+	if ok {
+		t.Fatalf("expected provider not to be found")
 	}
 }
 

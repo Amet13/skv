@@ -10,6 +10,16 @@ import (
 	"skv/internal/provider"
 )
 
+func TestNew(t *testing.T) {
+	p := New()
+	if p == nil {
+		t.Fatal("New() returned nil")
+	}
+
+	// Ensure it implements the Provider interface
+	_ = p
+}
+
 func TestAzureNotFoundMapsToErrNotFound(t *testing.T) {
 	old := azureGetSecret
 	defer func() { azureGetSecret = old }()

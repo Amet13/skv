@@ -17,7 +17,7 @@
 - Vault: KV v2 and generic logical reads (`provider: vault`).
 - Exec: external command (`provider: exec`).
 
-Future providers can follow the same pattern, using `Extras` to pass provider-specific parameters like profile, region, project, namespace, etc.
+Additional providers can follow the same pattern, using `Extras` to pass provider-specific parameters like profile, region, project, namespace, etc.
 
 # Architecture
 
@@ -30,7 +30,7 @@ Future providers can follow the same pattern, using `Extras` to pass provider-sp
 Extension points:
 
 - Add a new provider under `internal/provider/<name>` and register it in `main.go`.
-- Consider future plugin loading via Go plugins or separate binaries.
+- Plugin loading via Go plugins or separate binaries can be considered for advanced use cases.
 
 Security:
 
