@@ -26,6 +26,9 @@ Flags:
 - `--mask` mask values in logs (default true)
 - `--timeout` fetch timeout
 - `--concurrency` number of concurrent provider calls (default 4)
+- `--retries` number of retries; `--retry-delay` between retries (e.g., 200ms)
+- `--require-env` ensure specific env names are present after fetch
+- `--require-alias` ensure specific aliases are selected
 
 ## skv list
 
@@ -54,4 +57,10 @@ skv export --all --env-file > .env
 
 # Run with secrets from config, with concurrency
 skv run --concurrency 8 -s db_password -- ./bin/app
+
+# Exclude some aliases while using --all
+skv run --all --all-except db_password,api_key -- -- printenv | grep -E 'JWT_SECRET|SERVICE_PASSWORD'
+
+# Retries and timeouts
+skv get db_password --retries 2 --retry-delay 300ms --timeout 5s
 ```

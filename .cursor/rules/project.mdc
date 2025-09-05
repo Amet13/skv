@@ -1,0 +1,72 @@
+---
+description: Project rules for the skv Go CLI application.
+globs:
+  - "**/*.go"
+alwaysApply: true
+---
+
+# `skv` Project Rules
+
+This document outlines the core principles, architecture, and coding standards for the `skv` project. These rules are to be followed to ensure a consistent, maintainable, and high-quality codebase.
+
+## 1. Core Principles
+
+- **Security First:** The primary goal of `skv` is to handle secrets securely. All code related to fetching, handling, and injecting secrets must be written with security as the top priority.
+- **Simplicity and Reliability:** The CLI should be intuitive and easy to use. The core logic must be reliable and fail-safe, with clear error messages.
+- **Extensibility:** The architecture should allow for easy addition of new secret providers (e.g., GCP Secret Manager, Azure Key Vault) without major refactoring.
+- **Maintainability:** Code should be clean, well-documented, and follow standard Go conventions.
+
+## 2. Architecture and Structure
+
+The `skv` project is structured as a standard Go module.
+
+- `cmd/skv/main.go`: CLI entry point; command parsing and provider registration.
+- `internal/config/`: Configuration loading, discovery, interpolation, and validation.
+- `internal/provider/`: Provider interface, registry, and implementations (e.g., `aws`, `gcp`, `azure`, `vault`, `exec`).
+- `internal/version/`: Build-time version information.
+
+## 3. Go Best Practices
+
+- **Go Modules:** The project uses Go Modules for dependency management.
+- **Error Handling:** Errors must be handled explicitly and gracefully. Do not ignore errors. Use `fmt.Errorf` with a descriptive message to wrap errors for better context.
+
+  - **Example:**
+
+    ```go
+    // Correct
+    _, err := client.FetchSecret()
+    if err != nil {
+        return fmt.Errorf("failed to fetch secret from provider: %w", err)
+    }
+
+    // Incorrect
+    // _, err := client.FetchSecret()
+    // if err != nil {
+    //     log.Fatal(err) // Hides the original error context
+    // }
+    ```
+
+- **Concurrency:** Use `sync.Mutex` for locking and `chan` for communication between goroutines. Avoid global variables.
+- **Testing:** All new functionality must be accompanied by unit tests. Strive for high test coverage. Use `go test -race` to check for race conditions.
+- **Documentation:** All exported functions, variables, and types must have a clear and concise GoDoc comment.
+
+## 4. `Provider` Interface
+
+All secret providers must adhere to the minimal `provider.Provider` interface.
+
+```go
+// internal/provider/provider.go
+type Provider interface {
+	FetchSecret(ctx context.Context, spec SecretSpec) (string, error)
+}
+
+type SecretSpec struct {
+	Alias    string
+	Name     string
+	Provider string
+	EnvName  string
+	Extras   map[string]string
+}
+```
+
+Providers are registered in `cmd/skv/main.go` under one or more names (aliases). Use `spec.Extras` for provider-specific options (e.g., `region`, `profile`, `project`, `vault_url`, `namespace`).

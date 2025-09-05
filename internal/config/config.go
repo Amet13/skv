@@ -132,13 +132,6 @@ func locateConfigPath(overridePath string) string {
 	if env := os.Getenv("SKV_CONFIG"); env != "" {
 		return env
 	}
-	// XDG config home
-	if xdg := os.Getenv("XDG_CONFIG_HOME"); xdg != "" {
-		p := filepath.Join(xdg, "skv", "config.yaml")
-		if _, err := os.Stat(p); err == nil {
-			return p
-		}
-	}
 	// Home fallbacks
 	home, err := os.UserHomeDir()
 	if err == nil {

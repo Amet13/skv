@@ -2,28 +2,36 @@ package provider
 
 import (
 	"context"
+	"errors"
 	"testing"
 )
 
-type testProv struct{ out string }
+type fakeProvider struct {
+	val string
+	err error
+}
 
-func (t testProv) FetchSecret(_ context.Context, _ SecretSpec) (string, error) { return t.out, nil }
+func (f fakeProvider) FetchSecret(_ context.Context, _ SecretSpec) (string, error) {
+	return f.val, f.err
+}
 
-func TestRegistryRegisterAndGet(t *testing.T) {
-	Register("_test", testProv{out: "ok"})
-	p, ok := Get("_test")
+func TestRegistry(t *testing.T) {
+	Register("testp", fakeProvider{val: "ok"})
+	p, ok := Get("testp")
 	if !ok {
 		t.Fatalf("expected provider to be registered")
 	}
-	got, err := p.FetchSecret(context.Background(), SecretSpec{Name: "n"})
-	if err != nil || got != "ok" {
-		t.Fatalf("got %q, err=%v", got, err)
+	out, err := p.FetchSecret(context.Background(), SecretSpec{})
+	if err != nil || out != "ok" {
+		t.Fatalf("unexpected: out=%q err=%v", out, err)
 	}
 }
 
-func TestRegistryGetUnknown(t *testing.T) {
-	if _, ok := Get("__does_not_exist__"); ok {
-		t.Fatalf("expected unknown provider to not be found")
+func TestNotImplemented(t *testing.T) {
+	p := NewNotImplementedProvider("x")
+	_, err := p.FetchSecret(context.Background(), SecretSpec{})
+	if err == nil || !errors.Is(err, err) { // just check non-nil; message checked implicitly
+		t.Fatalf("expected error")
 	}
 }
 

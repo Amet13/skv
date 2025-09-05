@@ -68,12 +68,24 @@ func newRootCmd() *cobra.Command {
 	provider.Register("aws-secrets-manager", awsprovider.New())
 	// Aliases for convenience and docs consistency
 	provider.Register("aws", awsprovider.New())
+	// AWS SSM Parameter Store
+	provider.Register("aws-ssm", awsprovider.NewSSM())
+	provider.Register("ssm", awsprovider.NewSSM())
+	provider.Register("aws-parameter-store", awsprovider.NewSSM())
 	provider.Register("vault", vaultprovider.New())
 	provider.Register("gcp-secret-manager", gcpprovider.New())
 	provider.Register("gcp", gcpprovider.New())
 	provider.Register("azure-key-vault", azureprovider.New())
 	provider.Register("azure", azureprovider.New())
+	// Azure App Configuration (parameter store)
+	provider.Register("azure-appconfig", azureprovider.NewAppConfig())
+	provider.Register("appconfig", azureprovider.NewAppConfig())
 	provider.Register("exec", execprovider.New())
+
+	// Future/stub providers for extensibility (return clear not-implemented errors)
+	provider.Register("oci", provider.NewNotImplementedProvider("oci"))
+	provider.Register("ibm", provider.NewNotImplementedProvider("ibm"))
+	provider.Register("alibaba", provider.NewNotImplementedProvider("alibaba"))
 
 	cmd.AddCommand(newGetCmd())
 	cmd.AddCommand(newRunCmd())

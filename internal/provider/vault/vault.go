@@ -27,6 +27,9 @@ func (v *vaultProvider) FetchSecret(ctx context.Context, spec provider.SecretSpe
 	if err != nil {
 		return "", fmt.Errorf("vault client: %w", err)
 	}
+	if ns, ok := spec.Extras["namespace"]; ok && strings.TrimSpace(ns) != "" {
+		client.SetNamespace(ns)
+	}
 	if tok, ok := spec.Extras["token"]; ok && tok != "" {
 		client.SetToken(tok)
 	} else if roleID, rok := spec.Extras["role_id"]; rok {

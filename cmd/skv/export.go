@@ -194,10 +194,10 @@ func splitCSV(s string) []string {
 	field := ""
 	for _, r := range s {
 		if r == ',' {
-			if field != "" {
-				out = append(out, trim(field))
-				field = ""
+			if t := trim(field); t != "" {
+				out = append(out, t)
 			}
+			field = ""
 			continue
 		}
 		field += string(r)

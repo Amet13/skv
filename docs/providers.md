@@ -2,6 +2,22 @@
 
 This page documents the supported providers, required environment variables, example `.skv.yaml` config snippets, and how to reference secrets.
 
+Supported providers and storages:
+
+- AWS Secrets Manager (`aws`)
+- AWS SSM Parameter Store (`aws-ssm`, `ssm`)
+- Google Secret Manager (`gcp`)
+- Azure Key Vault (`azure`)
+- Azure App Configuration (`azure-appconfig`, `appconfig`)
+- HashiCorp Vault KV v2 / logical (`vault`)
+- Exec command (`exec`)
+
+Planned (stubs registered, not implemented yet):
+
+- Oracle Cloud Infrastructure (OCI)
+- IBM Cloud
+- Alibaba Cloud
+
 ### AWS Secrets Manager
 
 - Auth: Default AWS credential chain (env vars, shared config, metadata/IMDS).
@@ -9,6 +25,7 @@ This page documents the supported providers, required environment variables, exa
 - Extras (optional):
   - `region`: AWS region (e.g., `us-east-1`)
   - `version_stage`: e.g., `AWSCURRENT`
+  - `profile`: AWS shared config profile name (uses `~/.aws/config` and `~/.aws/credentials`)
 - Example:
 
 ```yaml
@@ -26,6 +43,8 @@ secrets:
 
 - Auth: Application Default Credentials. Set `GOOGLE_APPLICATION_CREDENTIALS` to a service account key if needed.
 - Name: `projects/<PROJECT>/secrets/<SECRET>/versions/<VERSION>` (use `latest` for newest).
+- Extras (optional):
+  - `credentials_file`: path to a service account JSON key file (overrides ADC)
 - Example:
 
 ```yaml
@@ -37,6 +56,27 @@ secrets:
 ```
 
 ### Azure Key Vault
+
+### Azure App Configuration (Parameter Store)
+
+- Auth: Default Azure credentials (managed identity, environment, or CLI login).
+- Name: Key name.
+- Extras (required):
+  - `endpoint`: e.g., https://<store>.azconfig.io
+- Extras (optional):
+  - `label`: App Configuration label to select
+- Example:
+
+```yaml
+secrets:
+  - alias: feature_flag
+    provider: azure-appconfig
+    name: myapp:feature:enabled
+    env: FEATURE_ENABLED
+    extras:
+      endpoint: https://myapp.azconfig.io
+      label: prod
+```
 
 - Auth: Default Azure credentials (managed identity, environment, or CLI login).
 - Name: Secret name. Optional specific `version` via `extras.version`.
@@ -63,6 +103,7 @@ secrets:
   - `address`: Vault address, e.g., <http://127.0.0.1:8200>
   - `mount`: override KV mount (if not inferrable)
   - `key`: preferred field name inside secret data
+  - `namespace`: Vault Enterprise namespace to use
 - Example:
 
 ```yaml
@@ -78,6 +119,27 @@ secrets:
 ```
 
 ### Exec Provider
+
+### AWS SSM Parameter Store
+
+- Auth: Default AWS credential chain and profiles (`AWS_PROFILE`).
+- Name: Parameter name (e.g., `/myapp/prod/db_password`).
+- Extras (optional):
+  - `region`: AWS region
+  - `profile`: shared config profile
+  - `with_decryption`: `true|false` (default true)
+- Example:
+
+```yaml
+secrets:
+  - alias: db_password
+    provider: aws-ssm
+    name: /myapp/prod/db_password
+    env: DB_PASSWORD
+    extras:
+      region: us-east-1
+      with_decryption: "true"
+```
 
 - Behavior: Executes a local command and uses stdout as the secret value.
 - If `extras.cmd` is omitted, `name` is treated as the command.

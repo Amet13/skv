@@ -4,8 +4,7 @@ Default discovery order:
 
 1. `--config` flag
 2. `SKV_CONFIG` env var
-3. `$XDG_CONFIG_HOME/skv/config.yaml` (if exists)
-4. `$HOME/.skv.yaml` or `$HOME/.skv.yml`
+3. `$HOME/.skv.yaml` or `$HOME/.skv.yml`
 
 Indentation is 2 spaces.
 

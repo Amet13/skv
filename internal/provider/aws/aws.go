@@ -29,6 +29,9 @@ var newSMClient = func(cfg aws.Config) smClient { return secretsmanager.NewFromC
 func (a *awsProvider) FetchSecret(ctx context.Context, spec provider.SecretSpec) (string, error) {
 	// Region precedence: spec.Extras["region"] > default chain
 	var opts []func(*awsconfig.LoadOptions) error
+	if prof, ok := spec.Extras["profile"]; ok && prof != "" {
+		opts = append(opts, awsconfig.WithSharedConfigProfile(prof))
+	}
 	if r, ok := spec.Extras["region"]; ok && r != "" {
 		opts = append(opts, awsconfig.WithRegion(r))
 	}

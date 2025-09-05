@@ -15,7 +15,22 @@
   </p>
 </div>
 
-Fetch secrets from providers like AWS Secrets Manager and HashiCorp Vault, and inject them into a process environment or print them to stdout.
+Fetch secrets from multiple providers and storages (AWS Secrets Manager, AWS SSM Parameter Store, Google Secret Manager, Azure Key Vault, HashiCorp Vault, and custom Exec) and inject them into a process environment, export them, or print to stdout.
+
+### Why skv?
+
+- Unify access to secrets across clouds and backends with a single CLI and config.
+- Inject secrets into any process safely, with masking and dry-run.
+- Concurrency, retries, timeouts, and per-provider options (region, profile, project, namespace, etc.).
+
+### Supported providers and storages
+
+- AWS: Secrets Manager (`provider: aws`), SSM Parameter Store (`provider: aws-ssm`)
+- GCP: Secret Manager (`provider: gcp`)
+- Azure: Key Vault (`provider: azure`)
+- HashiCorp Vault: KV v2 and logical (`provider: vault`)
+- Exec: run trusted local command to get dynamic secrets (`provider: exec`)
+- Planned: Oracle (OCI), IBM Cloud, Alibaba Cloud (currently registered as stubs)
 
 ## Installation
 
@@ -24,7 +39,10 @@ Fetch secrets from providers like AWS Secrets Manager and HashiCorp Vault, and i
 
 ```bash
 chmod +x ./skv_*
-mv ./skv_* /usr/local/bin/skv
+sudo mv ./skv_* /usr/local/bin/skv
+# For macOS, add to quarantine
+sudo xattr -rd com.apple.quarantine /usr/local/bin/skv
+
 skv version
 ```
 
@@ -34,25 +52,39 @@ Default config discovery:
 
 1. `--config` flag
 2. `SKV_CONFIG` env var
-3. `$XDG_CONFIG_HOME/skv/config.yaml` (if exists)
-4. `$HOME/.skv.yaml` or `$HOME/.skv.yml`
+3. `$HOME/.skv.yaml` or `$HOME/.skv.yml`
 
 ```yaml
 defaults:
   region: us-east-1
 
 secrets:
-  - alias: "db-password"
-    provider: "aws"
-    name: "myapp/prod/db-password"
-    region: "us-east-1"
+  # AWS Secrets Manager
+  - alias: db_password
+    provider: aws
+    name: myapp/prod/db_password
+    env: DB_PASSWORD
+    extras:
+      region: us-east-1
+      version_stage: AWSCURRENT
 
-  - alias: "api-token"
-    provider: "vault"
-    name: "secret/data/tokens/myapp"
-    address: "https://vault.mycompany.com"
-    token: "{{ VAULT_TOKEN }}"
-    env: "MYAPP_API_TOKEN"
+  # AWS SSM Parameter Store
+  - alias: db_host
+    provider: aws-ssm
+    name: /myapp/prod/db_host
+    env: DB_HOST
+    extras:
+      region: us-east-1
+      with_decryption: "true"
+
+  # Vault KV v2
+  - alias: api_token
+    provider: vault
+    name: kv/data/tokens/myapp
+    env: MYAPP_API_TOKEN
+    extras:
+      address: https://vault.mycompany.com
+      token: "{{ VAULT_TOKEN }}"
 ```
 
 Notes:
@@ -74,7 +106,7 @@ Generate completion:
 # Bash
 skv completion bash > /usr/local/etc/bash_completion.d/skv
 # Zsh
-skv completion zsh > ~/.zfunc/_skv && echo 'fpath+=(~/.zfunc)' >> ~/.zshrc
+mkdir -p ~/.zfunc/ && skv completion zsh > ~/.zfunc/_skv && echo 'fpath+=(~/.zfunc)' >> ~/.zshrc
 # Fish
 skv completion fish > ~/.config/fish/completions/skv.fish
 ```
@@ -111,9 +143,15 @@ Common flags:
 
 ## Documentation
 
+- Docs index: `docs/index.md`
 - CLI: `docs/cli.md`
 - Configuration: `docs/configuration.md`
-- Providers: `docs/providers.md`
+- Providers and storages: `docs/providers.md`
+- Developer guide (extensibility): `docs/DEVELOPING_PROVIDERS.md`
+- Troubleshooting: `docs/TROUBLESHOOTING.md`
+- Security checklist: `docs/SECURITY_CHECKLIST.md`
+- Examples: `docs/EXAMPLES.md`
+- Conventions: `docs/CONVENTIONS.md`
 
 ## Development
 

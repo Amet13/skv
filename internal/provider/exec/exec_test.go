@@ -49,3 +49,21 @@ func TestExecProviderError(t *testing.T) {
 	_ = ee // acceptable: exact error type varies by platform
 }
 
+func TestExecArgsAndTrim(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("skipping on windows")
+	}
+	p := New()
+	out, err := p.FetchSecret(context.Background(), provider.SecretSpec{
+		Alias: "a",
+		Name:  "/bin/echo",
+		Extras: map[string]string{
+			"args": "hello\n",
+			"trim": "true",
+		},
+	})
+	if err != nil || out != "hello" {
+		t.Fatalf("got %q err=%v", out, err)
+	}
+}
+
