@@ -163,3 +163,4 @@ func TestMockProvider_ErrorHandling(t *testing.T) {
 		t.Errorf("Expected error containing 'test error', got %v", err)
 	}
 }
+

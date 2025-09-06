@@ -46,13 +46,13 @@ Follow standard Go conventions with these specific guidelines:
 #### Error Handling
 
 ```go
-// ✅ Good: Wrap errors with context
+// Good: Wrap errors with context
 _, err := client.FetchSecret(ctx, spec)
 if err != nil {
     return fmt.Errorf("failed to fetch secret %q from %s: %w", spec.Alias, spec.Provider, err)
 }
 
-// ❌ Bad: Lose error context
+// Bad: Lose error context
 _, err := client.FetchSecret(ctx, spec)
 if err != nil {
     return err
@@ -62,7 +62,7 @@ if err != nil {
 #### Documentation
 
 ```go
-// ✅ Good: Clear, professional documentation
+// Good: Clear, professional documentation
 // FetchSecret retrieves a secret value from the provider.
 // It returns the secret value or an error if the secret cannot be retrieved.
 // The context can be used for cancellation and timeout control.
@@ -70,7 +70,7 @@ func (p *provider) FetchSecret(ctx context.Context, spec SecretSpec) (string, er
     // Implementation
 }
 
-// ❌ Bad: Missing or unclear documentation
+// Bad: Bad: Missing or unclear documentation
 // Gets secret
 func (p *provider) FetchSecret(ctx context.Context, spec SecretSpec) (string, error) {
     // Implementation
@@ -80,7 +80,7 @@ func (p *provider) FetchSecret(ctx context.Context, spec SecretSpec) (string, er
 #### Testing
 
 ```go
-// ✅ Good: Table-driven tests with clear structure
+// Good: Good: Table-driven tests with clear structure
 func TestProviderFetchSecret(t *testing.T) {
     tests := []struct {
         name    string
@@ -117,7 +117,7 @@ func TestProviderFetchSecret(t *testing.T) {
 #### Interface Compliance
 
 ```go
-// ✅ Good: Proper interface implementation
+// Good: Good: Proper interface implementation
 type awsProvider struct {
     client secretsManagerClient // Interface for testing
 }
@@ -126,7 +126,7 @@ func (p *awsProvider) FetchSecret(ctx context.Context, spec provider.SecretSpec)
     // Implementation with proper error handling
 }
 
-// ✅ Good: Testable client interface
+// Good: Good: Testable client interface
 type secretsManagerClient interface {
     GetSecretValue(ctx context.Context, params *secretsmanager.GetSecretValueInput) (*secretsmanager.GetSecretValueOutput, error)
 }
@@ -135,7 +135,7 @@ type secretsManagerClient interface {
 #### Error Mapping
 
 ```go
-// ✅ Good: Map provider errors to standard types
+// Good: Good: Map provider errors to standard types
 func (p *awsProvider) FetchSecret(ctx context.Context, spec provider.SecretSpec) (string, error) {
     output, err := p.client.GetSecretValue(ctx, &secretsmanager.GetSecretValueInput{
         SecretId: aws.String(spec.Name),
@@ -165,7 +165,7 @@ func (p *awsProvider) FetchSecret(ctx context.Context, spec provider.SecretSpec)
 ### Code Examples
 
 ```yaml
-# ✅ Good: Complete, working examples
+# Good: Good: Complete, working examples
 secrets:
   - alias: db_password
     provider: aws
@@ -177,7 +177,7 @@ secrets:
 ```
 
 ```bash
-# ✅ Good: Practical, copy-pasteable commands
+# Good: Good: Practical, copy-pasteable commands
 skv run --all --timeout 30s -- ./my-app
 ```
 
@@ -207,7 +207,7 @@ skv run --all --timeout 30s -- ./my-app
 ### Test Organization
 
 ```go
-// ✅ Good: Clear test organization
+// Good: Good: Clear test organization
 func TestAWSProvider(t *testing.T) {
     t.Run("FetchSecret", func(t *testing.T) {
         // Test FetchSecret method

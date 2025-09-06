@@ -32,3 +32,4 @@ func (m *mockProvider) FetchSecret(_ context.Context, spec provider.SecretSpec) 
 	}
 	return spec.Name, nil
 }
+

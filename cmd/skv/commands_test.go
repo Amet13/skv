@@ -94,13 +94,16 @@ func TestRunDryRun(t *testing.T) {
 	withTestConfig(t, cfg, func(_ string) {
 		cmd := newRunCmd()
 		var out bytes.Buffer
+		var errOut bytes.Buffer
 		cmd.SetOut(&out)
+		cmd.SetErr(&errOut)
 		cmd.SetArgs([]string{"--all", "--dry-run", "--", "echo", "test"})
 		if err := cmd.Execute(); err != nil {
 			t.Fatalf("run dry-run: %v", err)
 		}
 
-		output := out.String()
-		assertStringContains(t, output, []string{"TOKEN"})
+		output := errOut.String()
+		assertStringContains(t, output, []string{"TOKEN="})
 	})
 }
+

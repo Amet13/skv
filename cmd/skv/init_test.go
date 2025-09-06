@@ -136,3 +136,4 @@ func TestInitCmdForceOverwrite(t *testing.T) {
 		t.Error("file was not overwritten")
 	}
 }
+

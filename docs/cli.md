@@ -46,6 +46,34 @@ Print version info.
 
 Generate completion for shells.
 
+## skv completion install
+
+Automatically install shell completions for the detected shell.
+
+## skv watch [flags] -- <command>
+
+Watch secrets for changes and execute command when they change.
+
+Flags:
+
+- `--secrets` comma-separated list of aliases to watch
+- `--secret` repeatable flag for individual aliases
+- `--all` watch all configured secrets
+- `--all-except` exclude specific aliases when using --all
+- `--interval` check interval (default "30s")
+- `--on-change-only` only execute on changes, not initially
+
+## skv doctor [flags]
+
+Run diagnostics and health checks.
+
+Flags:
+
+- `--verbose` show detailed diagnostic information
+- `--auth` check authentication and permissions
+- `--net` check network connectivity to providers
+- `--timeout` timeout for network checks (default "30s")
+
 ### Examples
 
 ```bash

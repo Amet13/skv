@@ -47,3 +47,4 @@ func fetchWithRetry(ctx context.Context, p provider.Provider, spec provider.Secr
 	}
 	return "", err
 }
+

@@ -170,6 +170,21 @@ func newRunCmd() *cobra.Command {
 						}
 						return
 					}
+
+					// Apply transformation if configured
+					transformedVal, err := s.TransformValue(val)
+					if err != nil {
+						if strict {
+							mu.Lock()
+							if firstErr == nil {
+								firstErr = exitCodeError{code: 3, err: fmt.Errorf("%s: transform error: %w", alias, err)}
+							}
+							mu.Unlock()
+						}
+						return
+					}
+					val = transformedVal
+
 					mu.Lock()
 					envAdditions[spec.EnvName] = val
 					mu.Unlock()
@@ -302,3 +317,4 @@ func exitStatusOf(ee *exec.ExitError) (int, bool) {
 	// Fallback: return generic exit code
 	return 5, true
 }
+

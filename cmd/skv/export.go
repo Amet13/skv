@@ -112,6 +112,19 @@ func newExportCmd() *cobra.Command {
 						mu.Unlock()
 						return
 					}
+
+					// Apply transformation if configured
+					transformedVal, err := s.TransformValue(val)
+					if err != nil {
+						mu.Lock()
+						if firstErr == nil {
+							firstErr = exitCodeError{code: 3, err: fmt.Errorf("%s: transform error: %w", alias, err)}
+						}
+						mu.Unlock()
+						return
+					}
+					val = transformedVal
+
 					mu.Lock()
 					kv[spec.EnvName] = val
 					mu.Unlock()
@@ -218,3 +231,4 @@ func trim(s string) string {
 	}
 	return s[i:j]
 }
+

@@ -67,6 +67,13 @@ func newGetCmd() *cobra.Command {
 				return exitCodeError{code: 3, err: err}
 			}
 
+			// Apply transformation if configured
+			transformedVal, err := s.TransformValue(val)
+			if err != nil {
+				return exitCodeError{code: 3, err: fmt.Errorf("transform error: %w", err)}
+			}
+			val = transformedVal
+
 			out := cmd.OutOrStdout()
 			if raw {
 				if newline {
@@ -101,3 +108,4 @@ func newGetCmd() *cobra.Command {
 	c.Flags().StringVar(&retryDelayStr, "retry-delay", "500ms", "Delay between retries (e.g., 200ms, 1s)")
 	return c
 }
+

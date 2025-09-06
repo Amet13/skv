@@ -112,8 +112,6 @@ secrets:
       secret_id: "{{ VAULT_SECRET_ID }}"
 ```
 
-### Exec Provider
-
 ### AWS SSM Parameter Store
 
 - Auth: Default AWS credential chain and profiles (`AWS_PROFILE`).
@@ -135,8 +133,9 @@ secrets:
       with_decryption: "true"
 ```
 
+### Exec Provider
+
 - Behavior: Executes a local command and uses stdout as the secret value.
-- If `extras.cmd` is omitted, `name` is treated as the command.
 - Security: Ensure the script is trusted and does not log secrets.
 - Name: Command path when convenient; any additional arguments can go into `extras.args`.
 - Extras (optional):

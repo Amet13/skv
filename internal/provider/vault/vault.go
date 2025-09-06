@@ -129,3 +129,4 @@ func pickValue(m map[string]interface{}, spec provider.SecretSpec) (string, bool
 	}
 	return "", false
 }
+

@@ -10,3 +10,4 @@ func TestHealthCmd(t *testing.T) {
 	tests := getHealthTestCases()
 	runTableTests(t, tests, newHealthCmd)
 }
+

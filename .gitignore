@@ -7,6 +7,13 @@ completions/
 
 # Coverage reports
 coverage.out
+*.out
+*.html
+
+# Test files
+test-*.yaml
+test-*.yml
+test-*.json
 
 # IDE/editor files
 .DS_Store

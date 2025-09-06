@@ -23,6 +23,10 @@ jobs:
             ${{ runner.os }}-go-
       - name: Lint and test
         run: make ci
+      - name: Race detection
+        run: go test -race ./...
+      - name: Benchmarks
+        run: go test -bench=. -benchmem ./...
       - name: Vet
         run: go vet ./...
       - name: Staticcheck

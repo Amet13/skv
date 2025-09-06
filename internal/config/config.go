@@ -27,19 +27,29 @@ type Defaults struct {
 	Extras  map[string]string `yaml:"extras"`  // Provider-specific defaults
 }
 
+// Transform represents a transformation to apply to a secret value.
+type Transform struct {
+	Type     string            `yaml:"type"`     // Transform type: "template", "mask", "prefix", "suffix"
+	Template string            `yaml:"template"` // Template string with {{ .value }} placeholder
+	Prefix   string            `yaml:"prefix"`   // Prefix to add
+	Suffix   string            `yaml:"suffix"`   // Suffix to add
+	Options  map[string]string `yaml:"options"`  // Additional transform options
+}
+
 // Secret represents a single secret to fetch and where to place it.
 type Secret struct {
-	Alias    string            `yaml:"alias"`    // Human-readable identifier
-	Provider string            `yaml:"provider"` // Provider type (aws, gcp, etc.)
-	Name     string            `yaml:"name"`     // Provider-specific secret path/name
-	Env      string            `yaml:"env"`      // Environment variable name
-	Region   string            `yaml:"region"`   // Provider region (AWS, GCP zones, etc.)
-	Address  string            `yaml:"address"`  // Provider address (Vault URL, etc.)
-	Token    string            `yaml:"token"`    // Authentication token
-	Path     string            `yaml:"path"`     // Secret path (for Vault-like providers)
-	Version  *int              `yaml:"version"`  // Secret version (if supported)
-	Metadata map[string]string `yaml:"metadata"` // Additional metadata
-	Extras   map[string]string `yaml:"extras"`   // Provider-specific options
+	Alias     string            `yaml:"alias"`     // Human-readable identifier
+	Provider  string            `yaml:"provider"`  // Provider type (aws, gcp, etc.)
+	Name      string            `yaml:"name"`      // Provider-specific secret path/name
+	Env       string            `yaml:"env"`       // Environment variable name
+	Region    string            `yaml:"region"`    // Provider region (AWS, GCP zones, etc.)
+	Address   string            `yaml:"address"`   // Provider address (Vault URL, etc.)
+	Token     string            `yaml:"token"`     // Authentication token
+	Path      string            `yaml:"path"`      // Secret path (for Vault-like providers)
+	Version   *int              `yaml:"version"`   // Secret version (if supported)
+	Metadata  map[string]string `yaml:"metadata"`  // Additional metadata
+	Extras    map[string]string `yaml:"extras"`    // Provider-specific options
+	Transform *Transform        `yaml:"transform"` // Optional value transformation
 }
 
 // Load reads the configuration from file, applying env interpolation and validation.
@@ -253,21 +263,24 @@ func interpolateEnv(s string) string {
 }
 
 func deriveEnvName(alias string) string {
+	if alias == "" {
+		return "SECRET"
+	}
+
 	b := strings.Builder{}
-	prevUnderscore := false
-	for _, r := range alias {
+	for i, r := range alias {
+		if i > 0 && r >= 'A' && r <= 'Z' {
+			// Insert underscore before uppercase letter (camelCase handling)
+			b.WriteByte('_')
+		}
 		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') {
 			ch := r
 			if ch >= 'a' && ch <= 'z' {
 				ch = ch - 'a' + 'A'
 			}
 			b.WriteRune(ch)
-			prevUnderscore = false
 		} else {
-			if !prevUnderscore {
-				b.WriteByte('_')
-				prevUnderscore = true
-			}
+			b.WriteByte('_')
 		}
 	}
 	res := b.String()
@@ -287,3 +300,46 @@ func containsMissingEnvToken(values ...string) bool {
 	}
 	return false
 }
+
+// TransformValue applies the specified transformation to a secret value.
+func (s *Secret) TransformValue(value string) (string, error) {
+	if s.Transform == nil {
+		return value, nil
+	}
+
+	switch s.Transform.Type {
+	case "template":
+		return s.applyTemplate(value)
+	case "mask":
+		return s.applyMask(value)
+	case "prefix":
+		return s.Transform.Prefix + value, nil
+	case "suffix":
+		return value + s.Transform.Suffix, nil
+	default:
+		return value, fmt.Errorf("unknown transform type: %s", s.Transform.Type)
+	}
+}
+
+func (s *Secret) applyTemplate(value string) (string, error) {
+	if s.Transform.Template == "" {
+		return value, nil
+	}
+
+	// Simple template replacement: replace {{ .value }} with the actual value
+	template := s.Transform.Template
+	result := strings.ReplaceAll(template, "{{ .value }}", value)
+	result = strings.ReplaceAll(result, "{{.value}}", value)
+
+	return result, nil
+}
+
+func (s *Secret) applyMask(value string) (string, error) {
+	if len(value) <= 4 {
+		return strings.Repeat("*", len(value)), nil
+	}
+
+	// Show first 2 and last 2 characters
+	return value[:2] + strings.Repeat("*", len(value)-4) + value[len(value)-2:], nil
+}
+

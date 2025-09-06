@@ -63,3 +63,4 @@ func (g *gcpProvider) FetchSecret(ctx context.Context, spec provider.SecretSpec)
 	}
 	return string(res.Payload.Data), nil
 }
+

@@ -89,3 +89,4 @@ func TestStringFormat(t *testing.T) {
 		t.Errorf("String() = %q, want %q", result, expected)
 	}
 }
+

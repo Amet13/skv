@@ -78,3 +78,4 @@ func (e *execProvider) FetchSecret(ctx context.Context, spec provider.SecretSpec
 	}
 	return out, nil
 }
+

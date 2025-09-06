@@ -39,6 +39,11 @@ secrets:
     env: string # environment variable name to export
     extras: # optional provider-specific parameters
       key: value
+    transform: # optional value transformation
+      type: template # template | mask | prefix | suffix
+      template: "postgres://user:{{ .value }}@localhost:5432/mydb" # for template type
+      prefix: "prefix-" # for prefix type
+      suffix: "-suffix" # for suffix type
 ```
 
 ### Skeletons
@@ -97,6 +102,28 @@ secrets:
       args: "--flag1 --flag2"
       trim: "true"
 ```
+
+### Transformations
+
+Secrets can be transformed using the `transform` field:
+
+```yaml
+secrets:
+  - alias: db_url
+    provider: aws
+    name: myapp/prod/db_password
+    env: DATABASE_URL
+    transform:
+      type: template
+      template: "postgres://user:{{ .value }}@localhost:5432/mydb"
+```
+
+Available transform types:
+
+- `template`: Replace `{{ .value }}` with the secret value
+- `mask`: Mask the secret (show first/last 2 characters)
+- `prefix`: Add a prefix to the secret value
+- `suffix`: Add a suffix to the secret value
 
 Notes:
 

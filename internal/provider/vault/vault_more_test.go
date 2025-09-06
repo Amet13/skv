@@ -59,3 +59,4 @@ func TestVaultKV2EmptyPayloadReturnsJSON(t *testing.T) {
 		t.Fatalf("expected empty JSON object, got %q", out)
 	}
 }
+

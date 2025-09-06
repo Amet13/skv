@@ -33,9 +33,12 @@ curl -sL "https://github.com/Amet13/skv/releases/latest/download/skv_linux_amd64
 chmod +x skv && sudo mv skv /usr/local/bin/
 
 # Setup and use
-skv init                 # Generate ~/.skv.yaml template
-skv get db-password      # Fetch single secret
-skv run --all -- env     # Inject all secrets into process
+skv init                          # Generate ~/.skv.yaml template
+skv doctor                        # Run diagnostics and health checks
+skv completion install            # Install shell completions
+skv get db-password               # Fetch single secret
+skv run --all -- env              # Inject all secrets into process
+skv watch --all -- echo "changed" # Watch secrets for changes
 ```
 
 See [installation guide](docs/installation.md) for other platforms and [documentation](docs/index.md) for full usage.

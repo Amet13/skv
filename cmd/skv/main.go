@@ -89,8 +89,11 @@ func newRootCmd() *cobra.Command {
 	cmd.AddCommand(newExportCmd())
 	cmd.AddCommand(newValidateCmd())
 	cmd.AddCommand(newHealthCmd())
+	cmd.AddCommand(newWatchCmd())
+	cmd.AddCommand(newDoctorCmd())
 	cmd.AddCommand(newVersionCmd())
 	cmd.AddCommand(newCompletionCmd())
 
 	return cmd
 }
+

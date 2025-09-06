@@ -20,3 +20,4 @@ func TestSplitCSVAndTrim(t *testing.T) {
 		t.Fatalf("trim got %q", got)
 	}
 }
+

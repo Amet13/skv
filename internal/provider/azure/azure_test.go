@@ -80,3 +80,4 @@ func TestAzureEmptyValue(t *testing.T) {
 		t.Fatalf("expected error for empty value")
 	}
 }
+

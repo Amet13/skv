@@ -62,3 +62,4 @@ func (p *ssmProvider) FetchSecret(ctx context.Context, spec provider.SecretSpec)
 	}
 	return aws.ToString(out.Parameter.Value), nil
 }
+

@@ -28,6 +28,9 @@ func TestCompletionBash(t *testing.T) {
 	if err := root.Execute(); err != nil {
 		t.Fatalf("completion bash: %v", err)
 	}
+	if buf.Len() == 0 {
+		t.Fatalf("expected completion script output")
+	}
 }
 
 func TestCompletionZsh(t *testing.T) {
@@ -38,6 +41,9 @@ func TestCompletionZsh(t *testing.T) {
 	root.SetArgs([]string{"completion", "zsh"})
 	if err := root.Execute(); err != nil {
 		t.Fatalf("completion zsh: %v", err)
+	}
+	if buf.Len() == 0 {
+		t.Fatalf("expected completion script output")
 	}
 }
 
@@ -50,4 +56,8 @@ func TestCompletionFish(t *testing.T) {
 	if err := root.Execute(); err != nil {
 		t.Fatalf("completion fish: %v", err)
 	}
+	if buf.Len() == 0 {
+		t.Fatalf("expected completion script output")
+	}
 }
+

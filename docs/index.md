@@ -7,9 +7,13 @@
 - **Cross-cloud unified config** - Single YAML for all providers
 - **Secure by design** - Memory-only secrets, never written to disk
 - **Process injection** - Safely inject secrets into command environments
-- **Flexible output** - Print, export to .env, or inject into processes
+- **Flexible output** - Print, export to .env, JSON, YAML, or inject into processes
+- **Secret transformations** - Template, mask, prefix, and suffix transformations
+- **Real-time monitoring** - Watch secrets for changes and execute commands
+- **Comprehensive diagnostics** - Doctor command for troubleshooting
 - **Provider extensibility** - Easy to add new secret backends
 - **Production ready** - Timeouts, retries, health checks, validation
+- **High test coverage** - 65%+ test coverage with comprehensive e2e tests
 
 ## Quickstart
 
@@ -30,11 +34,13 @@ secrets:
 4. **Validate and use**:
 
 ```bash
-skv validate                           # Check configuration
+skv doctor                            # Run diagnostics
+skv validate                          # Check configuration
 skv list                              # Show configured secrets
 skv get db_password                   # Get single secret
-skv export --all --format env > .env # Export to file
+skv export --all --format env > .env  # Export to file
 skv run --all -- env | grep DB_PASSWORD  # Run with secrets
+skv watch --all -- echo "changed"     # Watch for changes
 ```
 
 ## Documentation

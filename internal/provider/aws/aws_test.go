@@ -26,7 +26,7 @@ func TestAWSNotFoundMapsToErrNotFound(t *testing.T) {
 	newSMClient = func(_ aws.Config) smClient {
 		return fakeSM{nil, &types.ResourceNotFoundException{}}
 	}
-	a := &awsProvider{}
+	a := New()
 	_, err := a.FetchSecret(context.Background(), provider.SecretSpec{Name: "n", Extras: map[string]string{"region": "us-east-1"}})
 	if !errors.Is(err, provider.ErrNotFound) {
 		t.Fatalf("expected ErrNotFound, got %v", err)
@@ -39,9 +39,10 @@ func TestAWSSuccessSecretString(t *testing.T) {
 	secret := "ok"
 	out := &secretsmanager.GetSecretValueOutput{SecretString: &secret}
 	newSMClient = func(_ aws.Config) smClient { return fakeSM{out: out, err: nil} }
-	a := &awsProvider{}
+	a := New()
 	got, err := a.FetchSecret(context.Background(), provider.SecretSpec{Name: "n", Extras: map[string]string{"region": "us-east-1"}})
 	if err != nil || got != "ok" {
 		t.Fatalf("got %q err=%v", got, err)
 	}
 }
+
