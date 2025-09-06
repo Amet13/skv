@@ -1,4 +1,4 @@
-gversion: 2
+version: 2
 project_name: skv
 before:
   hooks:
