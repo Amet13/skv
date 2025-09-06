@@ -4,6 +4,7 @@ bin/
 completions/
 **/skv_*_*
 *.exe
+skv
 
 # Coverage reports
 coverage.out
