@@ -53,4 +53,3 @@ func TestLoadMissingEnvFails(t *testing.T) {
 		t.Fatalf("expected error due to missing env var")
 	}
 }
-

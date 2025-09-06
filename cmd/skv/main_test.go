@@ -42,4 +42,3 @@ func TestGetCommandPrintsValue(t *testing.T) {
 		t.Fatalf("got %q, want %q", got, "VALUE\n")
 	}
 }
-

@@ -66,4 +66,3 @@ func TestExecArgsAndTrim(t *testing.T) {
 		t.Fatalf("got %q err=%v", out, err)
 	}
 }
-

@@ -1,13 +1,15 @@
 # skv Documentation
 
-## Overview
+**skv** (Secure Key/Value Manager) is a cross-cloud CLI that unifies secret management across multiple providers. Fetch secrets from AWS, GCP, Azure, HashiCorp Vault, or custom commands, then inject them securely into processes, export to files, or print to stdout.
 
-`skv` is a cross-cloud CLI to fetch secrets from multiple providers and storages, and inject them into process environments, export them, or print to stdout.
+## Key Features
 
-- Unified config across clouds
-- Safe injection with masking and dry-run
-- Concurrency, retries, timeouts
-- Extensible provider model
+- **Cross-cloud unified config** - Single YAML for all providers
+- **Secure by design** - Memory-only secrets, never written to disk
+- **Process injection** - Safely inject secrets into command environments
+- **Flexible output** - Print, export to .env, or inject into processes
+- **Provider extensibility** - Easy to add new secret backends
+- **Production ready** - Timeouts, retries, health checks, validation
 
 ## Quickstart
 
@@ -35,13 +37,27 @@ skv export --all --format env > .env # Export to file
 skv run --all -- env | grep DB_PASSWORD  # Run with secrets
 ```
 
-## Reference
+## Documentation
 
-- **CLI reference**: [`cli.md`](cli.md)
-- **Configuration**: [`configuration.md`](configuration.md)
-- **Providers**: [`providers.md`](providers.md)
-- **Developer guide**: [`dev/developing-providers.md`](dev/developing-providers.md)
-- **Troubleshooting**: [`troubleshooting.md`](troubleshooting.md)
-- **Security**: [`security-checklist.md`](security-checklist.md)
-- **Examples**: [`examples.md`](examples.md)
-- **Migration**: [`migration.md`](migration.md)
+### Getting Started
+
+- **[Installation Guide](installation.md)** - Platform-specific installation instructions
+- **[Configuration](configuration.md)** - YAML config reference and examples
+- **[CLI Reference](cli.md)** - Complete command documentation
+
+### Providers
+
+- **[Providers Overview](providers.md)** - AWS, GCP, Azure, Vault, and Exec provider guides
+- **[Examples](examples.md)** - Real-world usage scenarios
+
+### Operations
+
+- **[Troubleshooting](troubleshooting.md)** - Common issues and solutions
+- **[Security Checklist](security-checklist.md)** - Security best practices
+
+### Development
+
+- **[Architecture](dev/architecture.md)** - Project structure and design
+- **[Developing Providers](dev/developing-providers.md)** - Adding new providers
+- **[Conventions](dev/conventions.md)** - Code style and project conventions
+- **[Cross-Platform Development](dev/cross-platform.md)** - Development on Windows/macOS/Linux

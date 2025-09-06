@@ -114,4 +114,3 @@ func getConfigPath() string {
 	home, _ := os.UserHomeDir()
 	return home + "/.skv.yaml"
 }
-

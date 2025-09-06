@@ -23,7 +23,7 @@ func TestE2E_Mock_ListGetExportRun(t *testing.T) {
 	cfg := "secrets:\n" +
 		"  - alias: a\n    provider: mock\n    name: secretA\n    env: A\n    extras:\n      value: va\n" +
 		"  - alias: b\n    provider: mock\n    name: secretB\n    env: B\n    extras:\n      value: vb\n"
-	cfgPath = writeTempConfig(t, cfg)
+	cfgPath = writeTestConfig(t, cfg)
 
 	// list
 	var out bytes.Buffer
@@ -76,4 +76,3 @@ func TestE2E_Mock_ListGetExportRun(t *testing.T) {
 		t.Fatalf("unexpected dry-run: %q", dr)
 	}
 }
-

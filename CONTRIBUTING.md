@@ -325,11 +325,10 @@ We use [Semantic Versioning](https://semver.org/):
 
 ### Release Checklist
 
-1. Update `CHANGELOG.md`
-2. Update version in documentation
-3. Ensure all tests pass
-4. Create and push tag
-5. GitHub Actions handles the release
+1. Update version in documentation
+2. Ensure all tests pass
+3. Create and push tag
+4. GitHub Actions handles the release
 
 ## Getting Help
 
@@ -349,7 +348,6 @@ We use [Semantic Versioning](https://semver.org/):
 
 Contributors are recognized in several ways:
 
-- Listed in `CHANGELOG.md` for their contributions
 - GitHub contributor statistics
 - Special recognition for significant contributions
 

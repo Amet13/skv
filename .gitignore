@@ -1,33 +1,19 @@
 # Build artifacts
 dist/
 bin/
-coverage.out
 completions/
-
-# OS/editor junk
-.DS_Store
-*.swp
-*.swo
-.idea/
-.vscode/
-
-# Build artifacts
-/dist/
 **/skv_*_*
 *.exe
 
-# Coverage
+# Coverage reports
 coverage.out
 
-# IDE/editor
-.vscode/
-.idea/
-*.swp
-
-# Node tools cache
-node_modules/
-
-# macOS
+# IDE/editor files
 .DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
 
-bin/
+# Node tools cache (for markdown linting)
+node_modules/

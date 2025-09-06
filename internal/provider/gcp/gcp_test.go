@@ -71,4 +71,3 @@ func TestGCPPermissionDeniedMapsToNotFound(t *testing.T) {
 		t.Fatalf("expected ErrNotFound, got %v", err)
 	}
 }
-

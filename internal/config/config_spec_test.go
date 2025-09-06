@@ -37,4 +37,3 @@ func TestToSpecBuildsEnvAndExtras(t *testing.T) {
 		t.Fatalf("extras = %#v want %#v", spec.Extras, want)
 	}
 }
-

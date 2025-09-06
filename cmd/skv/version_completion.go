@@ -42,4 +42,3 @@ func newCompletionCmd() *cobra.Command {
 	}
 	return c
 }
-

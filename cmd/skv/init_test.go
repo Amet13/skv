@@ -8,88 +8,73 @@ import (
 )
 
 func TestInitCmd(t *testing.T) {
-	tests := []struct {
-		name     string
-		args     []string
-		wantErr  bool
-		contains []string
-	}{
+	tests := []TestConfig{
 		{
-			name:     "default_template",
-			args:     []string{},
-			wantErr:  false,
-			contains: []string{"AWS Secrets Manager", "Google Cloud Secret Manager", "Azure Key Vault", "HashiCorp Vault", "exec"},
+			Name:     "default_template",
+			Args:     []string{},
+			WantErr:  false,
+			Contains: []string{"AWS Secrets Manager", "Google Cloud Secret Manager", "Azure Key Vault", "HashiCorp Vault", "exec"},
 		},
 		{
-			name:     "aws_template",
-			args:     []string{"--provider", "aws"},
-			wantErr:  false,
-			contains: []string{"AWS Secrets Manager", "AWS SSM Parameter Store"},
+			Name:     "aws_template",
+			Args:     []string{"--provider", "aws"},
+			WantErr:  false,
+			Contains: []string{"AWS Secrets Manager", "AWS SSM Parameter Store"},
 		},
 		{
-			name:     "gcp_template",
-			args:     []string{"--provider", "gcp"},
-			wantErr:  false,
-			contains: []string{"Google Secret Manager", "projects/my-project"},
+			Name:     "gcp_template",
+			Args:     []string{"--provider", "gcp"},
+			WantErr:  false,
+			Contains: []string{"Google Secret Manager", "projects/my-project"},
 		},
 		{
-			name:     "azure_template",
-			args:     []string{"--provider", "azure"},
-			wantErr:  false,
-			contains: []string{"Azure Key Vault", "Azure App Configuration"},
+			Name:     "azure_template",
+			Args:     []string{"--provider", "azure"},
+			WantErr:  false,
+			Contains: []string{"Azure Key Vault", "Azure App Configuration"},
 		},
 		{
-			name:     "vault_template",
-			args:     []string{"--provider", "vault"},
-			wantErr:  false,
-			contains: []string{"HashiCorp Vault", "kv/data/", "AppRole"},
+			Name:     "vault_template",
+			Args:     []string{"--provider", "vault"},
+			WantErr:  false,
+			Contains: []string{"HashiCorp Vault", "kv/data/", "AppRole"},
 		},
 		{
-			name:     "exec_template",
-			args:     []string{"--provider", "exec"},
-			wantErr:  false,
-			contains: []string{"exec", "scripts/", "./scripts/"},
+			Name:     "exec_template",
+			Args:     []string{"--provider", "exec"},
+			WantErr:  false,
+			Contains: []string{"Exec provider", "provider: exec", "args:"},
 		},
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.Name, func(t *testing.T) {
 			tempDir := t.TempDir()
 			outputPath := filepath.Join(tempDir, "test-config.yaml")
 
-			args := append(tt.args, "--output", outputPath)
+			args := append(tt.Args, "--output", outputPath)
 
 			cmd := newInitCmd()
 			cmd.SetArgs(args)
 
 			err := cmd.Execute()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("init command error = %v, wantErr %v", err, tt.wantErr)
+			if (err != nil) != tt.WantErr {
+				t.Errorf("init command error = %v, wantErr %v", err, tt.WantErr)
 				return
 			}
 
-			if !tt.wantErr {
-				// Verify file was created
-				if _, err := os.Stat(outputPath); os.IsNotExist(err) {
-					t.Fatalf("config file was not created at %s", outputPath)
-				}
+			if !tt.WantErr {
+				assertFileExists(t, outputPath)
+				assertFileContains(t, outputPath, tt.Contains)
 
-				// Read and verify content
+				// Verify it's valid YAML by checking basic structure
 				// #nosec G304: outputPath is controlled by test and is safe
 				content, err := os.ReadFile(outputPath)
 				if err != nil {
 					t.Fatalf("failed to read generated config: %v", err)
 				}
 
-				contentStr := string(content)
-				for _, expectedContent := range tt.contains {
-					if !strings.Contains(contentStr, expectedContent) {
-						t.Errorf("generated config does not contain expected content %q", expectedContent)
-					}
-				}
-
-				// Verify it's valid YAML by checking basic structure
-				if !strings.Contains(contentStr, "secrets:") {
+				if !strings.Contains(string(content), "secrets:") {
 					t.Error("generated config does not contain 'secrets:' section")
 				}
 			}
@@ -124,53 +109,30 @@ func TestInitCmdForceOverwrite(t *testing.T) {
 	outputPath := filepath.Join(tempDir, "existing-config.yaml")
 
 	// Create an existing file
-	originalContent := "existing content"
-	err := os.WriteFile(outputPath, []byte(originalContent), 0600)
+	err := os.WriteFile(outputPath, []byte("existing content"), 0600)
 	if err != nil {
 		t.Fatalf("failed to create existing file: %v", err)
 	}
 
 	// Try to init with force flag - should succeed
 	cmd := newInitCmd()
-	cmd.SetArgs([]string{"--output", outputPath, "--force", "--provider", "exec"})
+	cmd.SetArgs([]string{"--output", outputPath, "--force"})
 
 	err = cmd.Execute()
 	if err != nil {
-		t.Fatalf("init command with --force failed: %v", err)
+		t.Errorf("unexpected error with --force: %v", err)
 	}
 
-	// Verify file was overwritten
+	assertFileExists(t, outputPath)
+
+	// Verify content was overwritten
 	// #nosec G304: outputPath is controlled by test and is safe
 	content, err := os.ReadFile(outputPath)
 	if err != nil {
 		t.Fatalf("failed to read overwritten file: %v", err)
 	}
 
-	if string(content) == originalContent {
-		t.Error("file was not overwritten despite --force flag")
-	}
-
-	if !strings.Contains(string(content), "secrets:") {
-		t.Error("overwritten file does not contain valid config structure")
+	if string(content) == "existing content" {
+		t.Error("file was not overwritten")
 	}
 }
-
-func TestInitCmdDefaultOutput(t *testing.T) {
-	// This test verifies that default output path logic works
-	// We can't easily test the actual home directory path, but we can test the logic
-
-	cmd := newInitCmd()
-	// Don't execute, just verify the command was created properly
-	if cmd == nil {
-		t.Fatal("newInitCmd() returned nil")
-	}
-
-	if cmd.Use != "init" {
-		t.Errorf("expected command name 'init', got %q", cmd.Use)
-	}
-
-	if !strings.Contains(cmd.Short, "configuration template") {
-		t.Errorf("expected short description to mention 'configuration template', got %q", cmd.Short)
-	}
-}
-

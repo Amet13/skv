@@ -224,7 +224,7 @@ func newRunCmd() *cobra.Command {
 				return nil
 			}
 
-			// #nosec G204 — the command is intentionally user-provided
+			// #nosec G204 - the command is intentionally user-provided
 			cexec := exec.CommandContext(ctx, command, commandArgs...)
 			cexec.Stdout = os.Stdout
 			cexec.Stderr = os.Stderr
@@ -302,4 +302,3 @@ func exitStatusOf(ee *exec.ExitError) (int, bool) {
 	// Fallback: return generic exit code
 	return 5, true
 }
-

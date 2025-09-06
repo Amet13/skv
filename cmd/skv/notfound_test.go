@@ -38,4 +38,3 @@ func TestGetNotFoundExit4(t *testing.T) {
 		t.Fatalf("expected exit code 4, got %v", err)
 	}
 }
-

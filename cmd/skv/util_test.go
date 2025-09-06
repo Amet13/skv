@@ -17,4 +17,3 @@ func TestMaskValue(t *testing.T) {
 		}
 	}
 }
-

@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide covers various ways to install `skv` on different platforms.
+This guide covers how to install `skv` on different platforms.
 
 ## Quick Install (Recommended)
 
@@ -11,6 +11,11 @@ Download the latest release for your platform:
 ```bash
 # Linux x64
 curl -sL "https://github.com/Amet13/skv/releases/latest/download/skv_linux_amd64" -o skv
+chmod +x skv
+sudo mv skv /usr/local/bin/
+
+# Linux ARM64
+curl -sL "https://github.com/Amet13/skv/releases/latest/download/skv_linux_arm64" -o skv
 chmod +x skv
 sudo mv skv /usr/local/bin/
 
@@ -25,18 +30,25 @@ curl -sL "https://github.com/Amet13/skv/releases/latest/download/skv_darwin_arm6
 chmod +x skv
 sudo mv skv /usr/local/bin/
 sudo xattr -rd com.apple.quarantine /usr/local/bin/skv
+```
 
+```powershell
 # Windows (PowerShell)
 Invoke-WebRequest -Uri "https://github.com/Amet13/skv/releases/latest/download/skv_windows_amd64.exe" -OutFile "skv.exe"
+# Move to a directory in your PATH
+```
+
 ### Verify Installation
 
 ```bash
 skv version
+```
+
 ## Build from Source
 
 ### Prerequisites
 
-- Go 1.21+ installed
+- Go 1.25+ installed
 - Git
 
 ### Steps
@@ -54,14 +66,16 @@ make build-all
 
 # Install to /usr/local/bin
 sudo cp dist/skv_$(go env GOOS)_$(go env GOARCH) /usr/local/bin/skv
+```
+
 ### Development Build
 
 ```bash
 # Install directly with go
 go install github.com/Amet13/skv/cmd/skv@latest
+```
 
-# Rename if needed
-mv $GOPATH/bin/skv $GOPATH/bin/skv
+## Shell Completions
 
 After installation, enable shell completions:
 
@@ -74,6 +88,8 @@ skv completion bash | sudo tee /etc/bash_completion.d/skv > /dev/null
 # Or for user only
 mkdir -p ~/.local/share/bash-completion/completions
 skv completion bash > ~/.local/share/bash-completion/completions/skv
+```
+
 ### Zsh
 
 ```bash
@@ -84,11 +100,15 @@ skv completion zsh > ~/.zfunc/_skv
 # Add to .zshrc if not already present
 echo 'fpath+=(~/.zfunc)' >> ~/.zshrc
 echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
+```
+
 ### Fish
 
 ```bash
 # Install completion
 skv completion fish > ~/.config/fish/completions/skv.fish
+```
+
 ### PowerShell
 
 ```powershell
@@ -97,6 +117,8 @@ skv completion powershell | Out-String | Invoke-Expression
 
 # Or save to profile
 skv completion powershell >> $PROFILE
+```
+
 ## Verification
 
 After installation, verify everything works:
@@ -120,43 +142,69 @@ skv --config test.yaml get test
 
 # Clean up
 rm test.yaml
+```
+
 ## Troubleshooting
 
 ### macOS Quarantine
 
-If you get a "cannot be opened because the developer cannot be verified" error:
+If you get a security warning on macOS:
 
 ```bash
 sudo xattr -rd com.apple.quarantine /usr/local/bin/skv
+```
+
 ### Permission Denied
 
-If you get permission denied errors:
+If you get permission errors:
 
 ```bash
+# Make binary executable
 chmod +x skv
+
+# Or install to user directory
+mkdir -p ~/bin
+mv skv ~/bin/
+export PATH="$HOME/bin:$PATH"
+```
+
 ### Command Not Found
 
-Ensure the binary is in your PATH:
+If `skv` command is not found:
 
 ```bash
-echo $PATH
+# Check if binary is in PATH
 which skv
 
-# Add to PATH if needed (add to ~/.bashrc or ~/.zshrc)
+# Add to PATH if needed
 export PATH="/usr/local/bin:$PATH"
+
+# Or add to shell profile
+echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
 ### Version Mismatch
 
-If you have multiple installations:
+If you see an old version:
 
 ```bash
-# Find all installations
-which -a skv
+# Remove old binary
+sudo rm /usr/local/bin/skv
 
-# Remove old versions
-sudo rm /old/path/to/skv
+# Download and install latest
+curl -sL "https://github.com/Amet13/skv/releases/latest/download/skv_linux_amd64" -o skv
+chmod +x skv
+sudo mv skv /usr/local/bin/
+```
+
 ## Next Steps
 
-- [Configuration Guide](configuration.md)
-- [Provider Setup](providers.md)
-- [CLI Reference](cli.md)
-- [Examples](EXAMPLES.md)
+After installation:
+
+1. **Generate config**: `skv init`
+2. **Configure providers**: Edit `~/.skv.yaml`
+3. **Validate setup**: `skv validate`
+4. **Test secrets**: `skv get <alias>`
+
+See [configuration guide](configuration.md) for detailed setup instructions.

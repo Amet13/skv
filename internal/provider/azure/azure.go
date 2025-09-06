@@ -55,4 +55,3 @@ func (a *azureProvider) FetchSecret(ctx context.Context, spec provider.SecretSpe
 	}
 	return *resp.Value, nil
 }
-

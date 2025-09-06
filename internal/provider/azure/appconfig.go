@@ -55,4 +55,3 @@ func (a *appConfigProvider) FetchSecret(ctx context.Context, spec provider.Secre
 	}
 	return val, nil
 }
-

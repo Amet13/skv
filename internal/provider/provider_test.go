@@ -32,4 +32,3 @@ func TestUnknownProvider(t *testing.T) {
 		t.Fatalf("expected provider not to be found")
 	}
 }
-

@@ -44,7 +44,7 @@ func (e *execProvider) FetchSecret(ctx context.Context, spec provider.SecretSpec
 		args = append(args, spec.Name)
 	}
 
-	// #nosec G204 — executing user-provided command is the purpose of this provider
+	// #nosec G204 - executing user-provided command is the purpose of this provider
 	c := exec.CommandContext(ctx, command, args...)
 	var stdout, stderr bytes.Buffer
 	c.Stdout = &stdout
@@ -78,4 +78,3 @@ func (e *execProvider) FetchSecret(ctx context.Context, spec provider.SecretSpec
 	}
 	return out, nil
 }
-

@@ -47,4 +47,3 @@ func TestSSMSuccess(t *testing.T) {
 		t.Fatalf("got %q err=%v", out, err)
 	}
 }
-

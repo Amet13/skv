@@ -287,4 +287,3 @@ func containsMissingEnvToken(values ...string) bool {
 	}
 	return false
 }
-

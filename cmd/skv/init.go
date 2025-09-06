@@ -326,4 +326,3 @@ secrets:
       args: "secretsmanager get-secret-value --secret-id my-secret --query SecretString --output text"
       trim: "true"
 `
-

@@ -32,4 +32,3 @@ func Get(name string) (Provider, bool) {
 	p, ok := registry[name]
 	return p, ok
 }
-

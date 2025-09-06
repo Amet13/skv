@@ -2,10 +2,22 @@ export GOTOOLCHAIN=auto
 .PHONY: build build-all fmt lint test cover ci all clean release snapshot tools
 
 build:
-	./scripts/build.sh host
+	@if command -v bash >/dev/null 2>&1; then \
+		./scripts/build.sh host; \
+	elif command -v powershell >/dev/null 2>&1; then \
+		powershell -ExecutionPolicy Bypass -File ./scripts/build.ps1 host; \
+	else \
+		./scripts/build.cmd host; \
+	fi
 
 build-all:
-	./scripts/build.sh all
+	@if command -v bash >/dev/null 2>&1; then \
+		./scripts/build.sh all; \
+	elif command -v powershell >/dev/null 2>&1; then \
+		powershell -ExecutionPolicy Bypass -File ./scripts/build.ps1 all; \
+	else \
+		./scripts/build.cmd all; \
+	fi
 
 fmt:
 	./scripts/lint.sh || true # ensure tools present

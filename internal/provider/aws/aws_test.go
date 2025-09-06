@@ -45,4 +45,3 @@ func TestAWSSuccessSecretString(t *testing.T) {
 		t.Fatalf("got %q err=%v", got, err)
 	}
 }
-

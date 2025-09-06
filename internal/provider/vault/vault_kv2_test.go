@@ -36,4 +36,3 @@ func TestVaultKV2Success(t *testing.T) {
 		t.Fatalf("got %q err=%v", out, err)
 	}
 }
-

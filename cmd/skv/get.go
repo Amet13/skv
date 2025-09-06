@@ -101,4 +101,3 @@ func newGetCmd() *cobra.Command {
 	c.Flags().StringVar(&retryDelayStr, "retry-delay", "500ms", "Delay between retries (e.g., 200ms, 1s)")
 	return c
 }
-

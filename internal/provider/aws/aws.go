@@ -69,4 +69,3 @@ func (a *awsProvider) FetchSecret(ctx context.Context, spec provider.SecretSpec)
 	}
 	return "", fmt.Errorf("aws secret has no SecretString or SecretBinary: %s", spec.Name)
 }
-

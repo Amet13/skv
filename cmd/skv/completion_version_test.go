@@ -51,4 +51,3 @@ func TestCompletionFish(t *testing.T) {
 		t.Fatalf("completion fish: %v", err)
 	}
 }
-

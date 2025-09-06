@@ -1,4 +1,4 @@
-version: 2
+gversion: 2
 project_name: skv
 before:
   hooks:
@@ -26,7 +26,7 @@ archives:
   - id: binary
     ids: [skv]
     formats: ["binary"]
-    name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if eq .Os "windows" }}.exe{{ end }}'
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
 checksum:
   name_template: "checksums.txt"
 release:
@@ -63,6 +63,7 @@ changelog:
   use: github
   sort: asc
   abbrev: 7
+  skip_emails: true
   groups:
     - title: "New Features"
       regexp: "^.*feat[(\\w)]*:+.*$"

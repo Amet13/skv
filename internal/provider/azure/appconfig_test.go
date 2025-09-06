@@ -35,4 +35,3 @@ func TestAppConfigError(t *testing.T) {
 		t.Fatalf("expected error")
 	}
 }
-

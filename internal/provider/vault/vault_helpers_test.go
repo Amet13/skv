@@ -52,4 +52,3 @@ func TestPickValue(t *testing.T) {
 		t.Fatalf("expected not ok")
 	}
 }
-

@@ -69,4 +69,3 @@ func newListCmd() *cobra.Command {
 	c.Flags().StringVar(&format, "format", "", "Output format: text|json|yaml")
 	return c
 }
-
