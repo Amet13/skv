@@ -122,7 +122,7 @@ func TestE2E_Mock_WatchCommand(t *testing.T) {
 	w := newWatchCmd()
 	w.SetOut(&out)
 	w.SetErr(&errBuf)
-	w.SetArgs([]string{"--all", "--on-change-only", "--interval", "1s", "--", "echo", "test"})
+	w.SetArgs([]string{"--all", "--on-change-only", "--interval", "1s", "--timeout", "2s", "--", "echo", "test"})
 
 	// Watch should execute and then timeout/exit after a short time
 	// We can't easily test the full watch loop in unit tests, so we test the setup

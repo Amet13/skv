@@ -24,6 +24,7 @@ func newWatchCmd() *cobra.Command {
 		interval     string
 		command      string
 		onChangeOnly bool
+		timeoutStr   string
 	)
 
 	c := &cobra.Command{
@@ -37,7 +38,7 @@ configurations when secrets change.`,
 		Args: cobra.MinimumNArgs(1),
 		RunE: func(_ *cobra.Command, args []string) error {
 			command = strings.Join(args, " ")
-			return runWatch(secretsCSV, secretsList, all, allExceptCSV, interval, command, onChangeOnly)
+			return runWatch(secretsCSV, secretsList, all, allExceptCSV, interval, command, onChangeOnly, timeoutStr)
 		},
 	}
 
@@ -47,11 +48,12 @@ configurations when secrets change.`,
 	c.Flags().StringVar(&allExceptCSV, "all-except", "", "Comma-separated aliases to exclude when using --all")
 	c.Flags().StringVar(&interval, "interval", "30s", "Check interval (e.g., 30s, 5m, 1h)")
 	c.Flags().BoolVar(&onChangeOnly, "on-change-only", false, "Only execute command when secrets change")
+	c.Flags().StringVar(&timeoutStr, "timeout", "", "Timeout for watch command (e.g., 30s, 5m, 1h)")
 
 	return c
 }
 
-func runWatch(secretsCSV string, secretsList []string, all bool, allExceptCSV, intervalStr, command string, onChangeOnly bool) error {
+func runWatch(secretsCSV string, secretsList []string, all bool, allExceptCSV, intervalStr, command string, onChangeOnly bool, timeoutStr string) error {
 	cfg, err := config.Load(cfgPath)
 	if err != nil {
 		return exitCodeError{code: 2, err: err}
@@ -110,6 +112,17 @@ func runWatch(secretsCSV string, secretsList []string, all bool, allExceptCSV, i
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
+	// Set up timeout if specified
+	var timeoutChan <-chan time.Time
+	if timeoutStr != "" {
+		timeout, err := time.ParseDuration(timeoutStr)
+		if err != nil {
+			return exitCodeError{code: 2, err: fmt.Errorf("invalid --timeout: %w", err)}
+		}
+		timeoutChan = time.After(timeout)
+		fmt.Printf("Watch will timeout after %v\n", timeout)
+	}
+
 	// Track secret values
 	lastValues := make(map[string]string)
 
@@ -127,6 +140,15 @@ func runWatch(secretsCSV string, secretsList []string, all bool, allExceptCSV, i
 		case <-ticker.C:
 			if err := checkAndExecute(cfg, watchList, lastValues, command, onChangeOnly); err != nil {
 				fmt.Printf("ERROR: Watch error: %v\n", err)
+			}
+		}
+		// Check timeout outside select if specified
+		if timeoutChan != nil {
+			select {
+			case <-timeoutChan:
+				fmt.Println("\nWatch timed out")
+				return nil
+			default:
 			}
 		}
 	}
