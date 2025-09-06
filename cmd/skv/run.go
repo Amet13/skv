@@ -11,11 +11,17 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 
 	"skv/internal/config"
 	"skv/internal/provider"
 )
+
+// isTerminal checks if the given file descriptor is a terminal
+func isTerminal(fd uintptr) bool {
+	return isatty.IsTerminal(fd)
+}
 
 func newRunCmd() *cobra.Command {
 	var (
@@ -243,7 +249,19 @@ func newRunCmd() *cobra.Command {
 			cexec := exec.CommandContext(ctx, command, commandArgs...)
 			cexec.Stdout = os.Stdout
 			cexec.Stderr = os.Stderr
-			cexec.Stdin = os.Stdin
+
+			// In CI environments or when stdin is not a terminal, use /dev/null to prevent hanging
+			if os.Getenv("CI") != "" || !isTerminal(os.Stdin.Fd()) {
+				devNull, err := os.Open("/dev/null")
+				if err == nil {
+					cexec.Stdin = devNull
+					defer devNull.Close()
+				} else {
+					cexec.Stdin = os.Stdin
+				}
+			} else {
+				cexec.Stdin = os.Stdin
+			}
 
 			env := os.Environ()
 			for k, v := range envAdditions {

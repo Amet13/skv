@@ -14,6 +14,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.64.2
 	github.com/aws/smithy-go v1.23.0
 	github.com/hashicorp/vault/api v1.20.0
+	github.com/mattn/go-isatty v0.0.20
 	github.com/spf13/cobra v1.10.1
 	google.golang.org/api v0.248.0
 	google.golang.org/grpc v1.75.0
@@ -58,7 +59,6 @@ require (
 	github.com/hashicorp/go-sockaddr v1.0.7 // indirect
 	github.com/hashicorp/hcl v1.0.1-vault-7 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
