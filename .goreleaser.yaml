@@ -63,7 +63,6 @@ changelog:
   use: github
   sort: asc
   abbrev: 7
-  skip_emails: true
   groups:
     - title: "New Features"
       regexp: "^.*feat[(\\w)]*:+.*$"
