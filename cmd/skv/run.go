@@ -255,7 +255,7 @@ func newRunCmd() *cobra.Command {
 				devNull, err := os.Open("/dev/null")
 				if err == nil {
 					cexec.Stdin = devNull
-					defer devNull.Close()
+					defer func() { _ = devNull.Close() }()
 				} else {
 					cexec.Stdin = os.Stdin
 				}
